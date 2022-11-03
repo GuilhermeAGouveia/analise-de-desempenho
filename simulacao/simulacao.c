@@ -17,6 +17,11 @@ double minimo(double a, double b)
     return a > b ? b : a;
 }
 
+double maximo(double a, double b)
+{
+    return a < b ? b : a;
+}
+
 int main(void)
 {
     double tempo_decorrido = 0.0, tempo_simulacao;
@@ -25,7 +30,11 @@ int main(void)
 
     double chegada, servico;
 
+    double soma_tempo_chegada = 0.0, soma_tempo_servico = 0.0;
+
     unsigned long int fila = 0;
+
+    unsigned long int maxFila = 0;
 
     printf("Informe o tempo de simulacao (seg): ");
     scanf("%lF", &tempo_simulacao);
@@ -44,7 +53,6 @@ int main(void)
 	sementeAleat = time(NULL);
 	srand(sementeAleat); //inicia o rand
 
-
     // gerando o tempo de chegada da primeira requisicao
     chegada = (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio());
 
@@ -58,8 +66,10 @@ int main(void)
             if (!fila)
             {
                 servico = tempo_decorrido + (-1.0 / (1.0 / tempo_medio_servico)) * log(aleatorio());
+                soma_tempo_servico += servico - tempo_decorrido;
             }
             fila++;
+            maxFila = maximo(maxFila, fila);
             chegada = tempo_decorrido + (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio());
         }
         else
@@ -69,9 +79,15 @@ int main(void)
             if (fila)
             {
                 servico = tempo_decorrido + (-1.0 / (1.0 / tempo_medio_servico)) * log(aleatorio());
+                soma_tempo_servico += servico - tempo_decorrido;
+
             }
         }
     }
 
+    //Qual a proporção do tempo em que o servidor ficou ocupado?
+    printf("Ocupação: %lF\n", soma_tempo_servico / maximo(tempo_decorrido, servico));
+    printf("Max fila: %ld\n", maxFila);
+    
     return 0;
 }
