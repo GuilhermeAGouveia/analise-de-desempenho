@@ -7,8 +7,8 @@
 #define OCUPACAO(x)
 #define E_N(x)
 #define E_W(x)
-#define ERRO_LITTLE(x)
-#define VALORES_FINAIS(x) x
+#define ERRO_LITTLE(x) x
+#define VALORES_FINAIS(x) 
 
 typedef struct little_
 {
@@ -85,11 +85,6 @@ int main()
     // srand(time(NULL));
     srand(10000);
 
-    // printf("Informe o tempo de simulacao (segundos): ");
-    // scanf("%lF",&tempo_simulacao);
-
-    // printf("Informe o intervalo medio entre chegadas (segundos): ");
-    // scanf("%lF",&intervalo_medio_chegada);
 
     // printf("Informe o tempo medio de servico (segundos): ");
     scanf("%lF", &porc_ocupacao);
@@ -98,31 +93,29 @@ int main()
 
     // gerando o tempo de chegada da primeira requisicao.
     chegada = (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio());
-    double timeControl = 1.0;
+    double timeControl = 100.00;
     while (tempo_decorrido <= tempo_simulacao)
     {
         tempo_decorrido = !fila ? chegada : minimo(chegada, servico);
 
-        if (tempo_decorrido > timeControl * 100.00)
+        if (tempo_decorrido > timeControl)
         {
             // printf("%lF,", timeControl * 100);
             double soma_areas_chegada = e_w_chegada.soma_areas +
-                                        (timeControl * 100.00 - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
+                                        (timeControl - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
 
             double soma_areas_saida = e_w_saida.soma_areas +
-                                      (timeControl * 100.00 - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
-            double e_n_final = e_n.soma_areas / (timeControl * 100.00);
+                                      (timeControl - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
+            double e_n_final = e_n.soma_areas / (timeControl);
             double e_w_final =
                 (soma_areas_chegada - soma_areas_saida) / (double)e_w_chegada.no_eventos;
-            double lambda = e_w_chegada.no_eventos / (timeControl * 100.00);
+            double lambda = e_w_chegada.no_eventos / (timeControl);
 
             E_N(printf(",%lF", e_n_final););
             E_W(printf(",%lF", e_w_final););
-            // printf("lambda: %lF\n\n", lambda);
-
             ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
-            OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(timeControl * 100.00, servico) * 100.00););
-            timeControl++;
+            OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(timeControl, servico)););
+            timeControl+=100.00;
         }
 
         // chegada
