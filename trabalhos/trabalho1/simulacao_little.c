@@ -3,7 +3,7 @@
 #include <math.h>
 #include <time.h>
 
-//Escolha apenas uma das macros abaixo para definir o tipo de medida que será exibida
+// Escolha apenas uma das macros abaixo para definir o tipo de medida que será exibida
 #define OCUPACAO(x)
 #define E_N(x)
 #define E_W(x)
@@ -68,6 +68,10 @@ int main()
     unsigned long int fila = 0;
     unsigned long int max_fila = 0;
 
+    double e_n_final = 0.0;
+    double e_w_final = 0.0;
+    double lambda;
+
     /**
     Little
     */
@@ -85,7 +89,6 @@ int main()
     // srand(time(NULL));
     srand(10000);
 
-
     // printf("Informe o tempo medio de servico (segundos): ");
     scanf("%lF", &porc_ocupacao);
     tempo_medio_servico = intervalo_medio_chegada * porc_ocupacao;
@@ -98,24 +101,34 @@ int main()
     {
         tempo_decorrido = !fila ? chegada : minimo(chegada, servico);
 
-        if (tempo_decorrido > timeControl)
+        if (tempo_decorrido >= timeControl)
         {
             // printf("%lF,", timeControl * 100);
-            double soma_areas_chegada = e_w_chegada.soma_areas +
-                                        (timeControl - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
+            // double soma_areas_chegada = e_w_chegada.soma_areas + (timeControl - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
+            // double soma_areas_saida = e_w_saida.soma_areas + (timeControl - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
 
-            double soma_areas_saida = e_w_saida.soma_areas +
-                                      (timeControl - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
-            double e_n_final = e_n.soma_areas / (timeControl);
-            double e_w_final =
-                (soma_areas_chegada - soma_areas_saida) / (double)e_w_chegada.no_eventos;
-            double lambda = e_w_chegada.no_eventos / (timeControl);
+            // e_n_final = e_n.soma_areas / (timeControl);
+            // e_w_final = (soma_areas_chegada - soma_areas_saida) / (double)e_w_chegada.no_eventos;
+            // lambda = e_w_chegada.no_eventos / (timeControl);
+
+            e_n.soma_areas += (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
+    		e_w_chegada.soma_areas += (tempo_decorrido - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
+    		e_w_saida.soma_areas += (tempo_decorrido - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
+
+			e_w_saida.tempo_anterior = tempo_decorrido;
+			e_n.tempo_anterior = tempo_decorrido;
+			e_w_chegada.tempo_anterior = tempo_decorrido;
+
+            e_n_final = e_n.soma_areas / tempo_decorrido;
+            e_w_final = (e_w_chegada.soma_areas - e_w_saida.soma_areas) / (double)e_w_chegada.no_eventos;
+            lambda = e_w_chegada.no_eventos / tempo_decorrido;
+
 
             E_N(printf(",%lF", e_n_final););
             E_W(printf(",%lF", e_w_final););
             ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
             OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(timeControl, servico)););
-            timeControl+=100.00;
+            timeControl += 100.00;
         }
 
         // chegada
@@ -172,10 +185,10 @@ int main()
     e_w_saida.soma_areas +=
         (tempo_decorrido - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
 
-    double e_n_final = e_n.soma_areas / tempo_decorrido;
-    double e_w_final =
+    e_n_final = e_n.soma_areas / tempo_decorrido;
+    e_w_final =
         (e_w_chegada.soma_areas - e_w_saida.soma_areas) / e_w_chegada.no_eventos;
-    double lambda = e_w_chegada.no_eventos / tempo_decorrido;
+    lambda = e_w_chegada.no_eventos / tempo_decorrido;
 
     VALORES_FINAIS(
         puts("\nResultado final:");

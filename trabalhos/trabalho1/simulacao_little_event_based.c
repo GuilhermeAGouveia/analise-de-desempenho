@@ -3,11 +3,11 @@
 #include <math.h>
 #include <time.h>
 
-//Escolha apenas uma das macros abaixo para definir o tipo de medida que será exibida
-#define OCUPACAO(x) x
-#define E_N(x)
-#define E_W(x)
-#define ERRO_LITTLE(x) 
+// Escolha apenas uma das macros abaixo para definir o tipo de medida que será exibida
+#define OCUPACAO(x) 
+#define E_N(x) 
+#define E_W(x) 
+#define ERRO_LITTLE(x) x
 #define VALORES_FINAIS(x) 
 
 typedef struct little_
@@ -35,11 +35,14 @@ double minimo(double num1, double num2)
     return num2;
 }
 
-double minimo_a(double *arr, int arr_size) {
+double minimo_a(double *arr, int arr_size)
+{
     int i;
     double min = arr[0];
-    for (i = 1; i < 3; i++) {
-        if (arr[i] < min) {
+    for (i = 1; i < 3; i++)
+    {
+        if (arr[i] < min)
+        {
             min = arr[i];
         }
     }
@@ -62,9 +65,11 @@ void inicia_little(little *l)
     l->soma_areas = 0.0;
 }
 
-void printArray(double *arr, int arr_size) {
+void printArray(double *arr, int arr_size)
+{
     int i;
-    for (i = 0; i < arr_size; i++) {
+    for (i = 0; i < arr_size; i++)
+    {
         printf("%lf ", arr[i]);
     }
     printf("\n");
@@ -86,6 +91,10 @@ int main()
 
     unsigned long int fila = 0;
     unsigned long int max_fila = 0;
+
+    double e_n_final = 0.0;
+    double e_w_final = 0.0;
+    double lambda;
 
     /**
     Little
@@ -111,33 +120,36 @@ int main()
 
     // gerando o tempo de chegada da primeira requisicao.
     chegada = (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio());
-    double timeControl = 100.00;
+    double coleta_dados = 100.00;
     while (tempo_decorrido <= tempo_simulacao)
     {
-        double eventos[3] = {chegada, servico, timeControl};
-        tempo_decorrido = !fila ? chegada : minimo_a(eventos, 3);
-        //printArray(eventos, 3);
-        //printf("Minimo eventos: %lf\n", minimo_a(eventos, 3));
-        // chegada
-         if (tempo_decorrido == timeControl) {
+        double eventos[3] = {chegada, servico, coleta_dados};
+        tempo_decorrido = !fila ? minimo(chegada, coleta_dados) : minimo_a(eventos, 3);
 
-            // printf("%lF,", timeControl * 100);
-            double soma_areas_chegada = e_w_chegada.soma_areas +
-                                        (timeControl - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
+        // coleta de dados
+        if (tempo_decorrido == coleta_dados)
+        {
 
-            double soma_areas_saida = e_w_saida.soma_areas +
-                                      (timeControl - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
-            double e_n_final = e_n.soma_areas / (timeControl);
-            double e_w_final =
-                (soma_areas_chegada - soma_areas_saida) / (double)e_w_chegada.no_eventos;
-            double lambda = e_w_chegada.no_eventos / (timeControl);
+            // printf("%lF,", coleta_dados * 100);
+            e_n.soma_areas += (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
+            e_w_chegada.soma_areas += (tempo_decorrido - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
+            e_w_saida.soma_areas += (tempo_decorrido - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
+
+            e_w_saida.tempo_anterior = tempo_decorrido;
+            e_n.tempo_anterior = tempo_decorrido;
+            e_w_chegada.tempo_anterior = tempo_decorrido;
+
+            e_n_final = e_n.soma_areas / tempo_decorrido;
+            e_w_final = (e_w_chegada.soma_areas - e_w_saida.soma_areas) / (double)e_w_chegada.no_eventos;
+            lambda = e_w_chegada.no_eventos / tempo_decorrido;
 
             E_N(printf(",%lF", e_n_final););
             E_W(printf(",%lF", e_w_final););
             ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
-            OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(timeControl, servico)););
-            timeControl+=100.00;
+            OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(coleta_dados, servico)););
+            coleta_dados += 100.00;
         }
+        // chegada
         else if (tempo_decorrido == chegada)
         {
             // printf("Chegada em %lF.\n", tempo_decorrido);
@@ -163,8 +175,9 @@ int main()
             e_w_chegada.no_eventos++;
         }
 
+        // saida
         else
-        { // saida
+        {
             // printf("Saida em %lF.\n", tempo_decorrido);
             fila--;
 
@@ -192,10 +205,10 @@ int main()
     e_w_saida.soma_areas +=
         (tempo_decorrido - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
 
-    double e_n_final = e_n.soma_areas / tempo_decorrido;
-    double e_w_final =
+    e_n_final = e_n.soma_areas / tempo_decorrido;
+    e_w_final =
         (e_w_chegada.soma_areas - e_w_saida.soma_areas) / e_w_chegada.no_eventos;
-    double lambda = e_w_chegada.no_eventos / tempo_decorrido;
+    lambda = e_w_chegada.no_eventos / tempo_decorrido;
 
     VALORES_FINAIS(
         puts("\nResultado final:");
@@ -209,12 +222,3 @@ int main()
 
     return 0;
 }
-
-// testando o live sh
-// e ai mermão kkkkk
-// tem chat pô
-// eu estou pelo celular kkkk
-
-//é daora pra caramba mesmo kkk//é daora pra caramba nesmo kkkkk// oloco kk
-// mas tem um chatzinho embutido tbm kk
-// muito bom
