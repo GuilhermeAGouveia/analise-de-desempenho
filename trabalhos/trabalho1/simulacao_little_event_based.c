@@ -7,8 +7,8 @@
 #define OCUPACAO(x) 
 #define E_N(x) 
 #define E_W(x) 
-#define ERRO_LITTLE(x) x
-#define VALORES_FINAIS(x) 
+#define ERRO_LITTLE(x) 
+#define VALORES_FINAIS(x) x
 
 typedef struct little_
 {
@@ -113,7 +113,7 @@ int main()
     // srand(time(NULL));
     srand(10000);
 
-    // printf("Informe o tempo medio de servico (segundos): ");
+    printf("Informe o percentual de ocupação desejado (entre 0 e 1): ");
     scanf("%lF", &porc_ocupacao);
     tempo_medio_servico = intervalo_medio_chegada * porc_ocupacao;
     printf("\n%.2lF%%,0", porc_ocupacao * 100);
@@ -218,7 +218,7 @@ int main()
         printf("lambda: %lF\n\n", lambda);
         printf("Erro de Little: %.20lF\n\n", fabs(e_n_final - lambda * e_w_final));
         printf("Ocupacao: %lF.\n", soma_tempo_servico / maximo(tempo_decorrido, servico));
-        printf("Max fila: %d.\n", max_fila);)
+        printf("Max fila: %ld.\n", max_fila);)
 
     return 0;
 }
