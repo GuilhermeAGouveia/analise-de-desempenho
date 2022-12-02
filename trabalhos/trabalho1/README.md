@@ -1,5 +1,7 @@
 # Trabalho 1 (2022/2)
 
+> <strong>O código fonte principal é `simulador_little_event_based.c`</strong>
+
 ## 💻 Objetivo
 
 Gerar dados aleatórios que simulem o comportamento de um sistema de filas. Todos os dados gerados são captados a cada 100 segundos e armazenados em um arquivo de texto. O arquivo de texto é lido e os dados são processados para gerar gráficos que representam o comportamento do sistema de filas.
