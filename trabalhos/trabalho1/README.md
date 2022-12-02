@@ -1,6 +1,6 @@
 # Trabalho 1 (2022/2)
 
-> <strong>O código fonte principal é `simulador_little_event_based.c`</strong>
+> <strong>O código fonte principal é `simulacao_little_event_based.c`</strong>
 
 ## 💻 Objetivo
 
