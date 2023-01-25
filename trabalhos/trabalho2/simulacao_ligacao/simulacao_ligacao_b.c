@@ -145,10 +145,6 @@ int main()
     chegada = (Event) {CHEGADA, (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio())};
     insert_minheap(heapEventos, chegada);
 
-    servico = (Event) {SERVICO, 100000000000.00};
-    insert_minheap(heapEventos, chegada);
-
-    
     Event coleta_dados = (Event) {COLETA_DADOS, 100.00};
     insert_minheap(heapEventos, coleta_dados);
     while (tempo_decorrido <= tempo_simulacao)
