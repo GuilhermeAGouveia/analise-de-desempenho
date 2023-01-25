@@ -26,6 +26,15 @@ double aleatorio()
     return (u);
 }
 
+double maximo(double num1, double num2)
+{
+    if (num1 > num2)
+    {
+        return num1;
+    }
+    return num2;
+}
+
 double minimo(double num1, double num2)
 {
     if (num1 < num2)
@@ -47,15 +56,6 @@ double minimo_a(double *arr, int arr_size)
         }
     }
     return min;
-}
-
-double maximo(double num1, double num2)
-{
-    if (num1 > num2)
-    {
-        return num1;
-    }
-    return num2;
 }
 
 void inicia_little(little *l)
@@ -93,7 +93,7 @@ int main()
     double tempo_simulacao = 36000;
     double tempo_decorrido = 0.0;
 
-    double intervalo_medio_chegada = 0.2;
+    double intervalo_medio_chegada = 0.01;
     double largura_link;
     double porc_ocupacao;
 
