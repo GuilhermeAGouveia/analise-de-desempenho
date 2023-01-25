@@ -177,7 +177,7 @@ int main()
             E_W(printf(",%lF", e_w_final););
             ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
             OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(coleta_dados, servico)););
-            coleta_dados = (Event) {COLETA_DADOS, coleta_dados.time + 100.00};
+            coleta_dados = (Event) {COLETA_DADOS, tempo_decorrido + 100.00};
             insert_minheap(heapEventos, coleta_dados);
 
         }
