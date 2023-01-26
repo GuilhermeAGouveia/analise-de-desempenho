@@ -154,7 +154,7 @@ void print_heap(MinHeap* heap) {
     // inorder traversal of the tree
     printf("Min Heap:\n");
     for (int i=0; i<heap->size; i++) {
-        printf("(%d, %lf) -> ", heap->arr[i].type, heap->arr[i].time);
+        printf("(%c, %lf) -> ", heap->arr[i].type, heap->arr[i].time);
     }
     printf("\n");
 }

@@ -36,29 +36,6 @@ double maximo(double num1, double num2)
     return num2;
 }
 
-double minimo(double num1, double num2)
-{
-    if (num1 < num2)
-    {
-        return num1;
-    }
-    return num2;
-}
-
-double minimo_a(double *arr, int arr_size)
-{
-    int i;
-    double min = arr[0];
-    for (i = 1; i < 3; i++)
-    {
-        if (arr[i] < min)
-        {
-            min = arr[i];
-        }
-    }
-    return min;
-}
-
 void inicia_little(little *l)
 {
     l->no_eventos = 0;
@@ -81,11 +58,16 @@ void printArray(double *arr, int arr_size)
     printf("\n");
 }
 
+double exponencial(double media)
+{
+    return (-1.0 / (1.0 / media)) * log(aleatorio());
+}
+
 int main()
 {
     // Capacity of 10 elements
-    MinHeap *heapEventos = init_minheap(200);
-    double tempo_simulacao = 100.0;
+    MinHeap *heapEventos = init_minheap(100000);
+    double tempo_simulacao = 20.0;
     double tempo_decorrido = 0.0;
 
     double CBR = 64000;
@@ -141,15 +123,14 @@ int main()
     coleta_dados = (Event){COLETA_DADOS, 100.00};
     insert_minheap(heapEventos, coleta_dados);
 
-    nova_chamada = (Event){NOVA_CHAMADA, (-1.0 / (1.0 / intervalo_medio_chamada)) * log(aleatorio())};
+    nova_chamada = (Event){NOVA_CHAMADA, exponencial(intervalo_medio_chamada)};
     insert_minheap(heapEventos, nova_chamada);
 
     while (tempo_decorrido <= tempo_simulacao)
     {
+        print_heap(heapEventos);
         Event current_event = extract_minheap(heapEventos);
         tempo_decorrido = current_event.time;
-        printf("Numero de chamadas no momento: %lu\n", num_chamadas);
-        printf("Event: %c, Time: %lF\n", current_event.type, current_event.time);
 
         // coleta de dados
         if (current_event.type == COLETA_DADOS)
@@ -197,7 +178,7 @@ int main()
                 fila++;
                 max_fila = fila > max_fila ? fila : max_fila;
                 // Gerar evento de chegada | inicio
-                chegada = (Event){CHEGADA, tempo_decorrido + (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio())};
+                chegada = (Event){CHEGADA, tempo_decorrido + exponencial(intervalo_medio_chegada)};
                 insert_minheap(heapEventos, chegada);
                 // Gerar evento de chegada | fim
 
@@ -242,12 +223,14 @@ int main()
         // nova chamada
         else if (current_event.type == NOVA_CHAMADA)
         {
+            printf("Nova chamada em %lF.\n", tempo_decorrido);
 
             if (!num_chamadas)
             {
                 // Gerar evento de fim de chamada | inicio
-                fim_chamada = (Event){FIM_CHAMADA, tempo_decorrido + (-1.0 / (1.0 / duracao_media_chamada)) * log(aleatorio())};
-                insert_minheap(heapEventos, servico);
+                fim_chamada = (Event){FIM_CHAMADA, tempo_decorrido + exponencial(duracao_media_chamada)};
+                insert_minheap(heapEventos, fim_chamada);
+
                 // Gerar evento de fim de chamada | fim
             }
 
@@ -256,25 +239,26 @@ int main()
             if (num_chamadas == 1)
             {
                 // Gerar primeiro evento de chegada | inicio
-                chegada = (Event){CHEGADA, tempo_decorrido + (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio())};
+                chegada = (Event){CHEGADA, tempo_decorrido + exponencial(intervalo_medio_chegada)};
                 insert_minheap(heapEventos, chegada);
                 // Gerar evento de chegada | fim
             }
 
             // Gerar evento de nova chamada | inicio
-            nova_chamada = (Event){NOVA_CHAMADA, tempo_decorrido + (-1.0 / (1.0 / intervalo_medio_chamada)) * log(aleatorio())};
+            nova_chamada = (Event){NOVA_CHAMADA, tempo_decorrido + exponencial(intervalo_medio_chamada)};
             insert_minheap(heapEventos, nova_chamada);
+
+            fim_chamada = (Event){FIM_CHAMADA, nova_chamada.time + exponencial(duracao_media_chamada)};
+            insert_minheap(heapEventos, fim_chamada);
+
             // Gerar evento de nova chamada | fim
+            printf("Numero de chamadas no momento: %lu\n", num_chamadas);
+            printf("Numero de eventos no momento: %d\n", heapEventos->size);
         }
         else if (current_event.type == FIM_CHAMADA)
         {
+            printf("Fim de chamada em %lF.\n", tempo_decorrido);
             num_chamadas--;
-
-            if (num_chamadas)
-            {
-                fim_chamada = (Event){FIM_CHAMADA, tempo_decorrido + (-1.0 / (1.0 / duracao_media_chamada)) * log(aleatorio())};
-                insert_minheap(heapEventos, servico);
-            }
         }
     }
     e_w_chegada.soma_areas +=
@@ -305,11 +289,11 @@ int main()
 //     // Capacity of 10 elements
 //     MinHeap* heap = init_minheap(10);
 
-//     insert_minheap(heap, (Event) {1, 3.12321});
-//     insert_minheap(heap, (Event) {1, 10.00});
-//     insert_minheap(heap, (Event) {1, 4.0});
-//     insert_minheap(heap, (Event) {1, 3.12319});
-//     insert_minheap(heap, (Event) {1, 20.0});
+//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 3.12321});
+//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 10.00});
+//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 4.0});
+//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 3.12319});
+//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 20.0});
 
 //     print_heap(heap);
 

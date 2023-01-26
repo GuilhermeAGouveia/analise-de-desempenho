@@ -183,7 +183,7 @@ int main()
 
             if (fila)
             {
-                servico = tempo_decorrido + (-1.0 / (1.0 / tempo_medio_servico)) * log(aleatorio());
+                servico = servico + (-1.0 / (1.0 / tempo_medio_servico)) * log(aleatorio());
                 soma_tempo_servico += servico - tempo_decorrido;
             }
 
