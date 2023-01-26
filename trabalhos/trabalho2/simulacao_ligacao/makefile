@@ -1,5 +1,5 @@
-run: binaryheap.c simulacao_ligacao.c
-	gcc -o simulacao_ligacao simulacao_ligacao.c binaryheap.c -lm
+run: binaryheap.c simulacao_ligacao_b.c
+	gcc -o simulacao_ligacao simulacao_ligacao_b.c binaryheap.c -lm
 	./simulacao_ligacao
 
 clean:

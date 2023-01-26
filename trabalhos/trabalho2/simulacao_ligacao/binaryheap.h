@@ -14,7 +14,7 @@
 #ifndef BINARYHEAP_H
 #define BINARYHEAP_H
 
-typedef enum {COLETA_DADOS, CHEGADA, SERVICO} EventType;
+typedef enum {COLETA_DADOS = 'C', CHEGADA = 'H', SERVICO = 'S', NOVA_CHAMADA = 'N', FIM_CHAMADA = 'F'} EventType;
 
 typedef struct Event {
 	EventType type;
