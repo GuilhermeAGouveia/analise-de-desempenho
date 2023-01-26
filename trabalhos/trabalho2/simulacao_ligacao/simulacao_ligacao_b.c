@@ -190,7 +190,7 @@ int main()
             fila++;
             max_fila = fila > max_fila ? fila : max_fila;
 
-            chegada = (Event) {CHEGADA, chegada.time + (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio())};
+            chegada = (Event) {CHEGADA, tempo_decorrido + (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio())};
             insert_minheap(heapEventos, chegada);
             // little
             e_n.soma_areas +=
@@ -212,7 +212,7 @@ int main()
 
             if (fila)
             {
-                servico = (Event) {SERVICO, servico.time + gera_pacote() / largura_link};
+                servico = (Event) {SERVICO, tempo_decorrido + gera_pacote() / largura_link};
                 insert_minheap(heapEventos, servico);
                 soma_tempo_servico += servico.time - tempo_decorrido;
             }
