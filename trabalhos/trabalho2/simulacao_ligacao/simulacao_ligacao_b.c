@@ -36,29 +36,6 @@ double maximo(double num1, double num2)
     return num2;
 }
 
-double minimo(double num1, double num2)
-{
-    if (num1 < num2)
-    {
-        return num1;
-    }
-    return num2;
-}
-
-double minimo_a(double *arr, int arr_size)
-{
-    int i;
-    double min = arr[0];
-    for (i = 1; i < 3; i++)
-    {
-        if (arr[i] < min)
-        {
-            min = arr[i];
-        }
-    }
-    return min;
-}
-
 void inicia_little(little *l)
 {
     l->no_eventos = 0;

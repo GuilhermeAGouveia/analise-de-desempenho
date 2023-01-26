@@ -37,7 +37,7 @@ MinHeap* insert_minheap(MinHeap* heap, Event element) {
     // we reach the root node. So, we will have inserted the
     // element in it's proper position to preserve the min heap property
     if (heap->size == heap->capacity) {
-        fprintf(stderr, "Cannot insert %d. Heap is already full!\n", element);
+        fprintf(stderr, "Cannot insert %lf. Heap is already full!\n", element.time);
         return heap;
     }
     // We can add it. Increase the size and add it to the end
