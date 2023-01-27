@@ -43,9 +43,9 @@ void inicia_little(little *l)
     l->soma_areas = 0.0;
 }
 
-int gera_pacote_chamada(int num_chamadas, int intervalo_medio_chegada, int CBR)
+int gera_pacote()
 {
-    return CBR * intervalo_medio_chegada * num_chamadas;
+    return 1280;
 }
 
 void printArray(double *arr, int arr_size)
@@ -58,38 +58,31 @@ void printArray(double *arr, int arr_size)
     printf("\n");
 }
 
-double exponencial(double media)
-{
-    return (-1.0 / (1.0 / media)) * log(aleatorio());
-}
-
 int main()
 {
     // Capacity of 10 elements
-    MinHeap *heapEventos = init_minheap(100000);
-    double tempo_simulacao = 20.0;
+    MinHeap *heapEventos = init_minheap(200);
+    double tempo_simulacao = 10000;
     double tempo_decorrido = 0.0;
 
-    double CBR = 64000;
+    double intervalo_medio_chamada = 5;
+    double duracao_chamada = 20;
 
     double intervalo_medio_chegada = 0.02;
-    double intervalo_medio_chamada = 5;
-    double duracao_media_chamada = 20;
-
     double largura_link;
     double porc_ocupacao;
 
     Event chegada;
     Event servico;
     Event coleta_dados;
-    Event nova_chamada;
+    Event chamada;
     Event fim_chamada;
 
     double soma_tempo_servico = 0.0;
 
     unsigned long int fila = 0;
-    unsigned long int num_chamadas = 0;
     unsigned long int max_fila = 0;
+    unsigned long int no_chamadas = 1;
 
     double e_n_final = 0.0;
     double e_w_final = 0.0;
@@ -114,29 +107,37 @@ int main()
 
     printf("Informe o percentual de ocupação desejado (entre 0 e 1): ");
     scanf("%lF", &porc_ocupacao);
-    largura_link = (1 / intervalo_medio_chegada) * ((duracao_media_chamada / intervalo_medio_chamada) * intervalo_medio_chegada * CBR) / porc_ocupacao;
-    printf("Largura do link: %lF", largura_link);
+    // largura_link = (1 / intervalo_medio_chegada) * 1280 / porc_ocupacao;
     printf("\n%.2lF%%,0", porc_ocupacao * 100);
 
-    // gerando o tempo de chegada da primeira requisicao.
+    largura_link = 4205.523287 * 1280 / porc_ocupacao;
+    printf("Largura do link: %lF\n", largura_link);
+
+    chamada = (Event){NOVA_CHAMADA, (-1.0 / (1.0 / intervalo_medio_chamada)) * log(aleatorio())};
+    insert_minheap(heapEventos, chamada);
+
+    fim_chamada = (Event){FIM_CHAMADA, chamada.time + (-1.0 / (1.0 / duracao_chamada)) * log(aleatorio())};
+    insert_minheap(heapEventos, fim_chamada);
 
     coleta_dados = (Event){COLETA_DADOS, 100.00};
     insert_minheap(heapEventos, coleta_dados);
 
-    nova_chamada = (Event){NOVA_CHAMADA, exponencial(intervalo_medio_chamada)};
-    insert_minheap(heapEventos, nova_chamada);
-
+    int count = 0;
+    int sum = 0;
     while (tempo_decorrido <= tempo_simulacao)
     {
-        print_heap(heapEventos);
+        // largura_link = (1 / (intervalo_medio_chegada / (no_chamadas))) * 1280 / porc_ocupacao;
+        // printf("Largura do link: %lF\n", largura_link);
+        // print_heap(heapEventos);
         Event current_event = extract_minheap(heapEventos);
         tempo_decorrido = current_event.time;
 
-        // coleta de dados
-        if (current_event.type == COLETA_DADOS)
+        // printf("Evento: %c, Tempo: %lF, Fila de Pacotes: %lu, Numero de chamadas em simul.: %lu\n", current_event.type, current_event.time, fila, no_chamadas);
+        switch (current_event.type)
         {
+        case COLETA_DADOS:
 
-            // Fazer coleta | inicio
+            // printf("%lF,", coleta_dados * 100);
             e_n.soma_areas += (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
             e_w_chegada.soma_areas += (tempo_decorrido - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
             e_w_saida.soma_areas += (tempo_decorrido - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
@@ -153,59 +154,42 @@ int main()
             E_W(printf(",%lF", e_w_final););
             ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
             OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(coleta_dados, servico)););
-            // Fazer coleta | fim
-
-            // Gerar novo evento de coleta de dados | inicio
             coleta_dados = (Event){COLETA_DADOS, tempo_decorrido + 100.00};
             insert_minheap(heapEventos, coleta_dados);
-            // Gerar novo evento de coleta de dados | fim
-        }
-        // chegada
-        else if (current_event.type == CHEGADA)
-        {
-            // printf("Chegada em %lF.\n", tempo_decorrido);
+            break;
+
+        case CHEGADA:
+
             if (!fila)
             {
-                // Gerar evento de servico | inicio
-                servico = (Event){SERVICO, tempo_decorrido + gera_pacote_chamada(num_chamadas, intervalo_medio_chegada, CBR) / largura_link};
+                servico = (Event){SERVICO, tempo_decorrido + gera_pacote() / largura_link};
                 insert_minheap(heapEventos, servico);
-                // Gerar evento de servico | fim
                 soma_tempo_servico += servico.time - tempo_decorrido;
             }
+            fila++;
+            max_fila = fila > max_fila ? fila : max_fila;
 
-            if (num_chamadas)
-            {
-                fila++;
-                max_fila = fila > max_fila ? fila : max_fila;
-                // Gerar evento de chegada | inicio
-                chegada = (Event){CHEGADA, tempo_decorrido + exponencial(intervalo_medio_chegada)};
-                insert_minheap(heapEventos, chegada);
-                // Gerar evento de chegada | fim
+            chegada = (Event){CHEGADA, tempo_decorrido + (-1.0 / (1.0 / (intervalo_medio_chegada / no_chamadas))) * log(aleatorio())};
+            insert_minheap(heapEventos, chegada);
+            // little
+            e_n.soma_areas +=
+                (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
+            e_n.tempo_anterior = tempo_decorrido;
+            e_n.no_eventos++;
 
-                // little
-                e_n.soma_areas +=
-                    (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
-                e_n.tempo_anterior = tempo_decorrido;
-                e_n.no_eventos++;
+            e_w_chegada.soma_areas +=
+                (tempo_decorrido - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
+            e_w_chegada.tempo_anterior = tempo_decorrido;
+            e_w_chegada.no_eventos++;
+            break;
 
-                e_w_chegada.soma_areas +=
-                    (tempo_decorrido - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
-                e_w_chegada.tempo_anterior = tempo_decorrido;
-                e_w_chegada.no_eventos++;
-            }
-        }
-
-        // saida
-        else if (current_event.type == SERVICO)
-        {
+        case SERVICO:
             fila--;
-            // Se a fila nao estiver vazia, gerar evento de servico
+
             if (fila)
             {
-                // Gerar evento de servico | inicio
-                servico = (Event){SERVICO, tempo_decorrido + gera_pacote_chamada(num_chamadas, intervalo_medio_chegada, CBR) / largura_link};
+                servico = (Event){SERVICO, tempo_decorrido + gera_pacote() / largura_link};
                 insert_minheap(heapEventos, servico);
-                // Gerar evento de servico | fim
                 soma_tempo_servico += servico.time - tempo_decorrido;
             }
 
@@ -219,46 +203,39 @@ int main()
                 (tempo_decorrido - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
             e_w_saida.tempo_anterior = tempo_decorrido;
             e_w_saida.no_eventos++;
-        }
-        // nova chamada
-        else if (current_event.type == NOVA_CHAMADA)
-        {
-            printf("Nova chamada em %lF.\n", tempo_decorrido);
+            break;
 
-            if (!num_chamadas)
+        case NOVA_CHAMADA:
+
+            if (no_chamadas == 1)
             {
-                // Gerar evento de fim de chamada | inicio
-                fim_chamada = (Event){FIM_CHAMADA, tempo_decorrido + exponencial(duracao_media_chamada)};
-                insert_minheap(heapEventos, fim_chamada);
-
-                // Gerar evento de fim de chamada | fim
-            }
-
-            num_chamadas++;
-
-            if (num_chamadas == 1)
-            {
-                // Gerar primeiro evento de chegada | inicio
-                chegada = (Event){CHEGADA, tempo_decorrido + exponencial(intervalo_medio_chegada)};
+                chegada = (Event){CHEGADA, tempo_decorrido + (-1.0 / (1.0 / (intervalo_medio_chegada / no_chamadas))) * log(aleatorio())};
                 insert_minheap(heapEventos, chegada);
-                // Gerar evento de chegada | fim
+                // fim_chamada = (Event){FIM_CHAMADA, tempo_decorrido + (-1.0 / (1.0 / duracao_chamada)) * log(aleatorio())};
+                // insert_minheap(heapEventos, fim_chamada);
             }
 
-            // Gerar evento de nova chamada | inicio
-            nova_chamada = (Event){NOVA_CHAMADA, tempo_decorrido + exponencial(intervalo_medio_chamada)};
-            insert_minheap(heapEventos, nova_chamada);
+            no_chamadas++;
+            sum += no_chamadas;
+            count++;
+            chamada = (Event){NOVA_CHAMADA, tempo_decorrido + (-1.0 / (1.0 / intervalo_medio_chamada)) * log(aleatorio())};
+            insert_minheap(heapEventos, chamada);
 
-            fim_chamada = (Event){FIM_CHAMADA, nova_chamada.time + exponencial(duracao_media_chamada)};
+            fim_chamada = (Event){FIM_CHAMADA, chamada.time + (-1.0 / (1.0 / duracao_chamada)) * log(aleatorio())};
             insert_minheap(heapEventos, fim_chamada);
+            break;
 
-            // Gerar evento de nova chamada | fim
-            printf("Numero de chamadas no momento: %lu\n", num_chamadas);
-            printf("Numero de eventos no momento: %d\n", heapEventos->size);
-        }
-        else if (current_event.type == FIM_CHAMADA)
-        {
-            printf("Fim de chamada em %lF.\n", tempo_decorrido);
-            num_chamadas--;
+        case FIM_CHAMADA:
+            no_chamadas--;
+            sum += no_chamadas;
+            count++;
+            // if (no_chamadas > 1)
+            // {
+            //     fim_chamada = (Event){FIM_CHAMADA, tempo_decorrido + (-1.0 / (1.0 / duracao_chamada)) * log(aleatorio())};
+            //     insert_minheap(heapEventos, fim_chamada);
+            // }
+
+            break;
         }
     }
     e_w_chegada.soma_areas +=
@@ -281,7 +258,7 @@ int main()
         printf("Erro de Little: %.20lF\n\n", fabs(e_n_final - lambda * e_w_final));
         printf("Ocupacao: %lF.\n", soma_tempo_servico / maximo(tempo_decorrido, servico.time));
         printf("Max fila: %ld.\n", max_fila);)
-
+    printf("Media de chamadas: %lF.\n", (double) sum / count);
     return 0;
 }
 
@@ -289,11 +266,11 @@ int main()
 //     // Capacity of 10 elements
 //     MinHeap* heap = init_minheap(10);
 
-//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 3.12321});
-//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 10.00});
-//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 4.0});
-//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 3.12319});
-//     insert_minheap(heap, (Event) {NOVA_CHAMADA, 20.0});
+//     insert_minheap(heap, (Event) {1, 3.12321});
+//     insert_minheap(heap, (Event) {1, 10.00});
+//     insert_minheap(heap, (Event) {1, 4.0});
+//     insert_minheap(heap, (Event) {1, 3.12319});
+//     insert_minheap(heap, (Event) {1, 20.0});
 
 //     print_heap(heap);
 
