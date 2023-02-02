@@ -85,7 +85,7 @@ double exponential(double lambda)
 int main()
 {
     // Capacity of 10 elements
-    MinHeap *heapEventos = init_minheap(200);
+    MinHeap *heapEventos = init_minheap(2000);
     double tempo_simulacao = 10000;
     double tempo_decorrido = 0.0;
 
@@ -107,7 +107,7 @@ int main()
 
     unsigned long int fila = 0;
     unsigned long int max_fila = 0;
-    unsigned long int no_chamadas = 1;
+    unsigned long int no_chamadas = 0;
 
     double e_n_final = 0.0;
     double e_w_final = 0.0;
@@ -135,7 +135,8 @@ int main()
     // largura_link = (1 / intervalo_medio_chegada) * 1280 / porc_ocupacao;
     printf("\n%.2lF%%,0", porc_ocupacao * 100);
 
-    largura_link = (1 / intervalo_medio_chegada_web +  / intervalo_medio_chegada_ligacao) * ((0.1 * 1500 + 0.4 * 40 + 0.5 * 550) + 1280) / porc_ocupacao;
+    largura_link = (1 / intervalo_medio_chegada_web + 5 / intervalo_medio_chegada_ligacao) * ((0.1 * 1500 + 0.4 * 40 + 0.5 * 550) * 0.285714286 + 1280 * 0.714285714) / porc_ocupacao;
+    //largura_link = 1 / intervalo_medio_chegada_web * ((0.1 * 1500 + 0.4 * 40 + 0.5 * 550)) / porc_ocupacao + 2 / intervalo_medio_chegada_ligacao * 1280 / porc_ocupacao;
     printf("Largura do link: %lF\n", largura_link);
 
     chamada = (Event){NOVA_CHAMADA, exponential(intervalo_medio_chamada)};
@@ -145,6 +146,7 @@ int main()
     insert_minheap(heapEventos, fim_chamada);
 
     chegada = (Event){CHEGADA_WEB, exponential(intervalo_medio_chegada_web)};
+    insert_minheap(heapEventos, chegada);
 
     coleta_dados = (Event){COLETA_DADOS, 100.00};
     insert_minheap(heapEventos, coleta_dados);
@@ -280,8 +282,8 @@ int main()
             break;
 
         case NOVA_CHAMADA:
-
-            if (no_chamadas == 1)
+            
+            if (!no_chamadas)
             {
                 chegada = (Event){CHEGADA_LIGACAO, tempo_decorrido + exponential(intervalo_medio_chegada_ligacao)};
                 insert_minheap(heapEventos, chegada);
