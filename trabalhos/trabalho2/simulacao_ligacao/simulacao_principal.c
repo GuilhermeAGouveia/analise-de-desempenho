@@ -109,11 +109,11 @@ int main()
 {
     // Capacity of 10 elements
     MinHeap *heapEventos = init_minheap(2000);
-    double tempo_simulacao = 1000;
+    double tempo_simulacao = 36000;
     double tempo_decorrido = 0.0;
 
     double intervalo_medio_chamada = 5;
-    double duracao_chamada = 10;
+    double duracao_chamada = 20;
 
     double intervalo_medio_chegada_ligacao = 0.02;
     double intervalo_medio_chegada_web = 0.01;
@@ -151,38 +151,24 @@ int main()
     Little -- fim
     */
 
-    // srand(time(NULL));
-    srand(10000);
-
+    srand(1);
+    // calculando chances que cada pacote tem de ser gerado
     double no_pacotes_web_por_segundo = 1.0 / intervalo_medio_chegada_web;
-    double no_pacotes_ligacao_por_segundo = 4 / intervalo_medio_chegada_ligacao;
+    double no_pacotes_ligacao_por_segundo = (duracao_chamada / intervalo_medio_chamada) / intervalo_medio_chegada_ligacao;
     double no_pacotes_por_segundo = no_pacotes_web_por_segundo + no_pacotes_ligacao_por_segundo;
     double chance_web = no_pacotes_web_por_segundo / no_pacotes_por_segundo;
-    printf("Chance de ser web: %lf\n", chance_web);
 
     scanf("%lF", &porc_ocupacao);
-    // largura_link = (1 / intervalo_medio_chegada) * 1280 / porc_ocupacao;
     printf("\n%.2lF%%,0", porc_ocupacao * 100);
-    double intervalo_medio_chegada = 1 / (1 / intervalo_medio_chegada_web + 4 / intervalo_medio_chegada_ligacao);
-    printf("Intervalo médio de chegada: %lF\n", intervalo_medio_chegada);
+    double intervalo_medio_chegada = 1 / (1 / intervalo_medio_chegada_web + (duracao_chamada / intervalo_medio_chamada) / intervalo_medio_chegada_ligacao);
     largura_link = (1.00 / intervalo_medio_chegada) * ((0.1 * 1500.00 + 0.4 * 40.00 + 0.5 * 550.00) * chance_web + 1280.00 * (1 - chance_web)) / porc_ocupacao;
-    // largura_link = 1 / intervalo_medio_chegada * ((0.1 * 1500 + 0.4 * 40 + 0.5 * 550)) / porc_ocupacao + 2 / intervalo_medio_chegada_ligacao * 1280 / porc_ocupacao;
     printf("Largura do link: %lF\n", largura_link);
 
     chamada = (Event){NOVA_CHAMADA, exponential(intervalo_medio_chamada)};
     insert_minheap(heapEventos, chamada);
 
-    chamada = (Event){NOVA_CHAMADA, exponential(intervalo_medio_chamada)};
-    insert_minheap(heapEventos, chamada);
-
-    chamada = (Event){NOVA_CHAMADA, exponential(intervalo_medio_chamada)};
-    insert_minheap(heapEventos, chamada);
-
-    chamada = (Event){NOVA_CHAMADA, exponential(intervalo_medio_chamada)};
-    insert_minheap(heapEventos, chamada);
-
-    // fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
-    // insert_minheap(heapEventos, fim_chamada);
+    fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
+    insert_minheap(heapEventos, fim_chamada);
 
     chegada = (Event){CHEGADA, exponential(intervalo_medio_chegada)};
     insert_minheap(heapEventos, chegada);
@@ -190,19 +176,13 @@ int main()
     coleta_dados = (Event){COLETA_DADOS, 100.00};
     insert_minheap(heapEventos, coleta_dados);
 
-    int count = 0;
-    int sum = 0;
     while (tempo_decorrido <= tempo_simulacao)
     {
-        // largura_link = (1 / (intervalo_medio_chegada / (no_chamadas))) * 1280 / porc_ocupacao;
-        // printf("Largura do link: %lF\n", largura_link);
-        // print_heap(heapEventos);
-        intervalo_medio_chegada = 2 / (1 / intervalo_medio_chegada_web + no_chamadas / intervalo_medio_chegada_ligacao);
-        // printf("Intervalo médio de chegada: %lF\n", intervalo_medio_chegada);
+        intervalo_medio_chegada = 1 / (1 / intervalo_medio_chegada_web + no_chamadas / intervalo_medio_chegada_ligacao);
         Event current_event = extract_minheap(heapEventos);
         tempo_decorrido = current_event.time;
 
-        //printf("Evento: %c, Tempo: %lF, Fila de Pacotes: %lu, Numero de chamadas em simul.: %lu\n", current_event.type, current_event.time, fila, no_chamadas);
+        // printf("Evento: %c, Tempo: %lF, Fila de Pacotes: %lu, Numero de chamadas em simul.: %lu\n", current_event.type, current_event.time, fila, no_chamadas);
         switch (current_event.type)
         {
         case COLETA_DADOS:
@@ -277,28 +257,16 @@ int main()
 
         case NOVA_CHAMADA:
 
-            if (!no_chamadas)
-            {
-                chegada = (Event){CHEGADA, tempo_decorrido + exponential(intervalo_medio_chegada)};
-                insert_minheap(heapEventos, chegada);
-            }
-
             no_chamadas++;
-            // chamada = (Event){NOVA_CHAMADA, tempo_decorrido + exponential(intervalo_medio_chamada)};
-            // insert_minheap(heapEventos, chamada);
+            chamada = (Event){NOVA_CHAMADA, tempo_decorrido + exponential(intervalo_medio_chamada)};
+            insert_minheap(heapEventos, chamada);
 
-            // fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
-            // insert_minheap(heapEventos, fim_chamada);
+            fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
+            insert_minheap(heapEventos, fim_chamada);
             break;
 
         case FIM_CHAMADA:
             no_chamadas--;
-            // if (no_chamadas > 1)
-            // {
-            //     fim_chamada = (Event){FIM_CHAMADA, tempo_decorrido + (-1.0 / (1.0 / duracao_chamada)) * log(aleatorio())};
-            //     insert_minheap(heapEventos, fim_chamada);
-            // }
-
             break;
         }
     }
@@ -321,34 +289,9 @@ int main()
         printf("lambda: %lF\n\n", lambda);
         printf("Erro de Little: %.20lF\n\n", fabs(e_n_final - lambda * e_w_final));
         printf("Ocupacao: %lF.\n", soma_tempo_servico / maximo(tempo_decorrido, servico.time));
-        printf("Max fila: %ld.\n", max_fila);)
-    printf("Media de chamadas: %lF.\n", (double)sum / count);
-    printf("Numero de pacotes: web: %ld, ligacao: %ld.\n", no_pacotes_web, no_pacotes_ligacao);
+        printf("Max fila: %ld.\n", max_fila);
+        printf("Numero de pacotes: web: %ld, ligacao: %ld.\n", no_pacotes_web, no_pacotes_ligacao);)
     free_minheap(heapEventos);
 
     return 0;
 }
-
-// int main() {
-//     // Capacity of 10 elements
-//     MinHeap* heap = init_minheap(10);
-
-//     insert_minheap(heap, (Event) {1, 3.12321});
-//     insert_minheap(heap, (Event) {1, 10.00});
-//     insert_minheap(heap, (Event) {1, 4.0});
-//     insert_minheap(heap, (Event) {1, 3.12319});
-//     insert_minheap(heap, (Event) {1, 20.0});
-
-//     print_heap(heap);
-
-//     // Delete the heap->arr[1] (50)
-//     delete_element(heap, 1);
-
-//     print_heap(heap);
-
-//     // Delete the minimum element
-//     delete_minimum(heap);
-//     print_heap(heap);
-//     free_minheap(heap);
-//     return 0;
-// }
