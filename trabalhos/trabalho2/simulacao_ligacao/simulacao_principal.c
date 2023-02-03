@@ -75,7 +75,7 @@ int gera_pacote(double intervalo_medio_chegada_web, double intervalo_medio_chega
     double no_pacotes_web_por_segundo = 1.0 / intervalo_medio_chegada_web;
     double no_pacotes_ligacao_por_segundo = no_chamadas / intervalo_medio_chegada_ligacao;
     double no_pacotes_por_segundo = no_pacotes_web_por_segundo + no_pacotes_ligacao_por_segundo;
-    int chance_web = (int)(no_pacotes_web_por_segundo / no_pacotes_por_segundo * 100);
+    int chance_web = (no_pacotes_web_por_segundo / no_pacotes_por_segundo * 100);
     int chance = rand() % 100;
 
     if (chance < chance_web)
@@ -121,8 +121,8 @@ int main()
     double tempo_simulacao = 36000;
     double tempo_decorrido = 0.0;
 
-    double intervalo_medio_chamada = 5;
-    double duracao_chamada = 20;
+    double intervalo_medio_chamada = 15;
+    double duracao_chamada = 100;
 
     double intervalo_medio_chegada_ligacao = 0.02;
     double intervalo_medio_chegada_web = 0.01;
