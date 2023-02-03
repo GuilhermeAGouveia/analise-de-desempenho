@@ -11,6 +11,9 @@
 #define ERRO_LITTLE(x)
 #define VALORES_FINAIS(x) x
 
+static int no_pacotes_web = 0;
+static int no_pacotes_ligacao = 0;
+
 typedef struct little_
 {
     unsigned long int no_eventos;
@@ -43,6 +46,11 @@ void inicia_little(little *l)
     l->soma_areas = 0.0;
 }
 
+int gera_pacote_ligacao()
+{
+    return 1280;
+}
+
 int gera_pacote_web()
 {
     int tamPacotes[3] = {1500, 40, 550};
@@ -62,9 +70,24 @@ int gera_pacote_web()
     return tamPacotes[i];
 }
 
-int gera_pacote_ligacao()
+int gera_pacote(double intervalo_medio_chegada_web, double intervalo_medio_chegada_ligacao, long int no_chamadas)
 {
-    return 1280;
+    double no_pacotes_web_por_segundo = 1.0 / intervalo_medio_chegada_web;
+    double no_pacotes_ligacao_por_segundo = no_chamadas / intervalo_medio_chegada_ligacao;
+    double no_pacotes_por_segundo = no_pacotes_web_por_segundo + no_pacotes_ligacao_por_segundo;
+    int chance_web = (int)(no_pacotes_web_por_segundo / no_pacotes_por_segundo * 100);
+    int chance = rand() % 100;
+
+    if (chance < chance_web)
+    {
+        no_pacotes_web++;
+        return gera_pacote_web();
+    }
+    else
+    {
+        no_pacotes_ligacao++;
+        return gera_pacote_ligacao();
+    }
 }
 
 void printArray(double *arr, int arr_size)
@@ -128,41 +151,34 @@ int main()
     Little -- fim
     */
 
-    // srand(time(NULL));
-    srand(10000);
+    srand(1);
+    // calculando chances que cada pacote tem de ser gerado
+    double no_pacotes_web_por_segundo = 1.0 / intervalo_medio_chegada_web;
+    double no_pacotes_ligacao_por_segundo = (duracao_chamada / intervalo_medio_chamada) / intervalo_medio_chegada_ligacao;
+    double no_pacotes_por_segundo = no_pacotes_web_por_segundo + no_pacotes_ligacao_por_segundo;
+    double chance_web = no_pacotes_web_por_segundo / no_pacotes_por_segundo;
 
-    printf("Informe o percentual de ocupação desejado (entre 0 e 1): ");
     scanf("%lF", &porc_ocupacao);
-    // largura_link = (1 / intervalo_medio_chegada) * 1280 / porc_ocupacao;
     printf("\n%.2lF%%,0", porc_ocupacao * 100);
-
-    largura_link = (1.00 / intervalo_medio_chegada_web + 2.00 / intervalo_medio_chegada_ligacao) * ((0.1 * 1500.00 + 0.4 * 40.00 + 0.5 * 550.00) * 1.00 / 3.00 + 1280.00 * 2.00/3.00) / porc_ocupacao;
-    // largura_link = 1 / intervalo_medio_chegada_web * ((0.1 * 1500 + 0.4 * 40 + 0.5 * 550)) / porc_ocupacao + 2 / intervalo_medio_chegada_ligacao * 1280 / porc_ocupacao;
+    double intervalo_medio_chegada = 1 / (1 / intervalo_medio_chegada_web + (duracao_chamada / intervalo_medio_chamada) / intervalo_medio_chegada_ligacao);
+    largura_link = (1.00 / intervalo_medio_chegada) * ((0.1 * 1500.00 + 0.4 * 40.00 + 0.5 * 550.00) * chance_web + 1280.00 * (1 - chance_web)) / porc_ocupacao;
     printf("Largura do link: %lF\n", largura_link);
 
     chamada = (Event){NOVA_CHAMADA, exponential(intervalo_medio_chamada)};
     insert_minheap(heapEventos, chamada);
 
+    fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
+    insert_minheap(heapEventos, fim_chamada);
 
-    chamada = (Event){NOVA_CHAMADA, exponential(intervalo_medio_chamada)};
-    insert_minheap(heapEventos, chamada);
-
-    // fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
-    // insert_minheap(heapEventos, fim_chamada);
-
-    chegada = (Event){CHEGADA_WEB, exponential(intervalo_medio_chegada_web)};
+    chegada = (Event){CHEGADA, exponential(intervalo_medio_chegada)};
     insert_minheap(heapEventos, chegada);
 
     coleta_dados = (Event){COLETA_DADOS, 100.00};
     insert_minheap(heapEventos, coleta_dados);
 
-    int count = 0;
-    int sum = 0;
     while (tempo_decorrido <= tempo_simulacao)
     {
-        // largura_link = (1 / (intervalo_medio_chegada / (no_chamadas))) * 1280 / porc_ocupacao;
-        // printf("Largura do link: %lF\n", largura_link);
-        // print_heap(heapEventos);
+        intervalo_medio_chegada = 1 / (1 / intervalo_medio_chegada_web + no_chamadas / intervalo_medio_chegada_ligacao);
         Event current_event = extract_minheap(heapEventos);
         tempo_decorrido = current_event.time;
 
@@ -192,19 +208,18 @@ int main()
             insert_minheap(heapEventos, coleta_dados);
             break;
 
-        case CHEGADA_WEB:
+        case CHEGADA:
 
             if (!fila)
             {
-                last_servico.time = maximo(servico.time, tempo_decorrido);
-                servico = (Event){SERVICO_WEB, last_servico.time + gera_pacote_web() / largura_link};
+                servico = (Event){SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link};
                 insert_minheap(heapEventos, servico);
-                soma_tempo_servico += servico.time - last_servico.time;
+                soma_tempo_servico += servico.time - tempo_decorrido;
             }
             fila++;
             max_fila = fila > max_fila ? fila : max_fila;
 
-            chegada = (Event){CHEGADA_WEB, tempo_decorrido + exponential(intervalo_medio_chegada_web)};
+            chegada = (Event){CHEGADA, tempo_decorrido + exponential(intervalo_medio_chegada)};
             insert_minheap(heapEventos, chegada);
             // little
             e_n.soma_areas +=
@@ -218,64 +233,14 @@ int main()
             e_w_chegada.no_eventos++;
             break;
 
-        case SERVICO_WEB:
+        case SERVICO:
             fila--;
 
             if (fila)
             {
-                last_servico.time = maximo(servico.time, tempo_decorrido);
-                servico = (Event){SERVICO_WEB, last_servico.time + gera_pacote_web() / largura_link};
+                servico = (Event){SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link};
                 insert_minheap(heapEventos, servico);
-                soma_tempo_servico += servico.time - last_servico.time;
-            }
-
-            // little
-            e_n.soma_areas +=
-                (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
-            e_n.tempo_anterior = tempo_decorrido;
-            e_n.no_eventos--;
-
-            e_w_saida.soma_areas +=
-                (tempo_decorrido - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
-            e_w_saida.tempo_anterior = tempo_decorrido;
-            e_w_saida.no_eventos++;
-            break;
-
-        case CHEGADA_LIGACAO:
-
-            if (!fila)
-            {
-                last_servico.time = maximo(servico.time, tempo_decorrido);
-                servico = (Event){SERVICO_LIGACAO, last_servico.time + gera_pacote_ligacao() / largura_link};
-                insert_minheap(heapEventos, servico);
-                soma_tempo_servico += servico.time - last_servico.time;
-            }
-            fila++;
-            max_fila = fila > max_fila ? fila : max_fila;
-
-            chegada = (Event){CHEGADA_LIGACAO, tempo_decorrido + exponential(intervalo_medio_chegada_ligacao / no_chamadas)};
-            insert_minheap(heapEventos, chegada);
-            // little
-            e_n.soma_areas +=
-                (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
-            e_n.tempo_anterior = tempo_decorrido;
-            e_n.no_eventos++;
-
-            e_w_chegada.soma_areas +=
-                (tempo_decorrido - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
-            e_w_chegada.tempo_anterior = tempo_decorrido;
-            e_w_chegada.no_eventos++;
-            break;
-
-        case SERVICO_LIGACAO:
-            fila--;
-
-            if (fila)
-            {
-                last_servico.time = maximo(servico.time, tempo_decorrido);
-                servico = (Event){SERVICO_LIGACAO, last_servico.time + gera_pacote_ligacao() / largura_link};
-                insert_minheap(heapEventos, servico);
-                soma_tempo_servico += servico.time - last_servico.time;
+                soma_tempo_servico += servico.time - tempo_decorrido;
             }
 
             // little
@@ -292,30 +257,16 @@ int main()
 
         case NOVA_CHAMADA:
 
-            if (!no_chamadas)
-            {
-                chegada = (Event){CHEGADA_LIGACAO, tempo_decorrido + exponential(intervalo_medio_chegada_ligacao)};
-                insert_minheap(heapEventos, chegada);
-            }
-
             no_chamadas++;
-            sum += no_chamadas;
-            count++;
-            // chamada = (Event){NOVA_CHAMADA, tempo_decorrido + exponential(intervalo_medio_chamada)};
-            // insert_minheap(heapEventos, chamada);
+            chamada = (Event){NOVA_CHAMADA, tempo_decorrido + exponential(intervalo_medio_chamada)};
+            insert_minheap(heapEventos, chamada);
 
-            // fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
-            // insert_minheap(heapEventos, fim_chamada);
+            fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
+            insert_minheap(heapEventos, fim_chamada);
             break;
 
         case FIM_CHAMADA:
             no_chamadas--;
-            // if (no_chamadas > 1)
-            // {
-            //     fim_chamada = (Event){FIM_CHAMADA, tempo_decorrido + (-1.0 / (1.0 / duracao_chamada)) * log(aleatorio())};
-            //     insert_minheap(heapEventos, fim_chamada);
-            // }
-
             break;
         }
     }
@@ -338,31 +289,9 @@ int main()
         printf("lambda: %lF\n\n", lambda);
         printf("Erro de Little: %.20lF\n\n", fabs(e_n_final - lambda * e_w_final));
         printf("Ocupacao: %lF.\n", soma_tempo_servico / maximo(tempo_decorrido, servico.time));
-        printf("Max fila: %ld.\n", max_fila);)
-    printf("Media de chamadas: %lF.\n", (double)sum / count);
+        printf("Max fila: %ld.\n", max_fila);
+        printf("Numero de pacotes: web: %ld, ligacao: %ld.\n", no_pacotes_web, no_pacotes_ligacao);)
+    free_minheap(heapEventos);
+
     return 0;
 }
-
-// int main() {
-//     // Capacity of 10 elements
-//     MinHeap* heap = init_minheap(10);
-
-//     insert_minheap(heap, (Event) {1, 3.12321});
-//     insert_minheap(heap, (Event) {1, 10.00});
-//     insert_minheap(heap, (Event) {1, 4.0});
-//     insert_minheap(heap, (Event) {1, 3.12319});
-//     insert_minheap(heap, (Event) {1, 20.0});
-
-//     print_heap(heap);
-
-//     // Delete the heap->arr[1] (50)
-//     delete_element(heap, 1);
-
-//     print_heap(heap);
-
-//     // Delete the minimum element
-//     delete_minimum(heap);
-//     print_heap(heap);
-//     free_minheap(heap);
-//     return 0;
-// }
