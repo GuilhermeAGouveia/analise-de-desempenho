@@ -90,6 +90,15 @@ int gera_pacote(double intervalo_medio_chegada_web, double intervalo_medio_chega
     }
 }
 
+Event create_event(MinHeap *heapEventos, EventType type, double time)
+{
+    Event event;
+    event.type = type;
+    event.time = time;
+    insert_minheap(heapEventos, event);
+    return event;
+}
+
 void printArray(double *arr, int arr_size)
 {
     int i;
@@ -164,17 +173,10 @@ int main()
     largura_link = (1.00 / intervalo_medio_chegada) * ((0.1 * 1500.00 + 0.4 * 40.00 + 0.5 * 550.00) * chance_web + 1280.00 * (1 - chance_web)) / porc_ocupacao;
     printf("Largura do link: %lF\n", largura_link);
 
-    chamada = (Event){NOVA_CHAMADA, exponential(intervalo_medio_chamada)};
-    insert_minheap(heapEventos, chamada);
-
-    fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
-    insert_minheap(heapEventos, fim_chamada);
-
-    chegada = (Event){CHEGADA, exponential(intervalo_medio_chegada)};
-    insert_minheap(heapEventos, chegada);
-
-    coleta_dados = (Event){COLETA_DADOS, 100.00};
-    insert_minheap(heapEventos, coleta_dados);
+    chamada = create_event(heapEventos, NOVA_CHAMADA, exponential(intervalo_medio_chamada));
+    create_event(heapEventos, FIM_CHAMADA, chamada.time + exponential(duracao_chamada));
+    create_event(heapEventos, CHEGADA, exponential(intervalo_medio_chegada));
+    create_event(heapEventos, COLETA_DADOS, 100.0);
 
     while (tempo_decorrido <= tempo_simulacao)
     {
@@ -204,23 +206,21 @@ int main()
             E_W(printf(",%lF", e_w_final););
             ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
             OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(coleta_dados, servico)););
-            coleta_dados = (Event){COLETA_DADOS, tempo_decorrido + 100.00};
-            insert_minheap(heapEventos, coleta_dados);
+            create_event(heapEventos, COLETA_DADOS, tempo_decorrido + 100.00);
             break;
 
         case CHEGADA:
 
             if (!fila)
             {
-                servico = (Event){SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link};
-                insert_minheap(heapEventos, servico);
+                servico = create_event(heapEventos, SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link);
                 soma_tempo_servico += servico.time - tempo_decorrido;
             }
             fila++;
             max_fila = fila > max_fila ? fila : max_fila;
 
-            chegada = (Event){CHEGADA, tempo_decorrido + exponential(intervalo_medio_chegada)};
-            insert_minheap(heapEventos, chegada);
+            create_event(heapEventos, CHEGADA, tempo_decorrido + exponential(intervalo_medio_chegada));
+    
             // little
             e_n.soma_areas +=
                 (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
@@ -238,8 +238,7 @@ int main()
 
             if (fila)
             {
-                servico = (Event){SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link};
-                insert_minheap(heapEventos, servico);
+                servico = create_event(heapEventos, SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link);
                 soma_tempo_servico += servico.time - tempo_decorrido;
             }
 
@@ -258,11 +257,8 @@ int main()
         case NOVA_CHAMADA:
 
             no_chamadas++;
-            chamada = (Event){NOVA_CHAMADA, tempo_decorrido + exponential(intervalo_medio_chamada)};
-            insert_minheap(heapEventos, chamada);
-
-            fim_chamada = (Event){FIM_CHAMADA, chamada.time + exponential(duracao_chamada)};
-            insert_minheap(heapEventos, fim_chamada);
+            chamada = create_event(heapEventos, NOVA_CHAMADA, tempo_decorrido + exponential(intervalo_medio_chamada));
+            create_event(heapEventos, FIM_CHAMADA, chamada.time + exponential(duracao_chamada));
             break;
 
         case FIM_CHAMADA:
