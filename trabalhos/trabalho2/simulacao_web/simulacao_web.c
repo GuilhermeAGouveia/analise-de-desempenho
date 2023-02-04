@@ -4,11 +4,11 @@
 #include <time.h>
 
 // Escolha apenas uma das macros abaixo para definir o tipo de medida que será exibida
-#define OCUPACAO(x) 
+#define OCUPACAO(x) x
 #define E_N(x) 
 #define E_W(x) 
 #define ERRO_LITTLE(x) 
-#define VALORES_FINAIS(x) x
+#define VALORES_FINAIS(x) 
 
 typedef struct little_
 {
@@ -126,11 +126,11 @@ int main()
     // srand(time(NULL));
     srand(10000);
 
-    printf("Informe o percentual de ocupação desejado (entre 0 e 1): ");
+    //printf("Informe o percentual de ocupação desejado (entre 0 e 1): ");
     scanf("%lF", &porc_ocupacao);
     largura_link = (1 / intervalo_medio_chegada) * (0.1 * 1500 + 0.4 * 40 + 0.5 * 550) / porc_ocupacao;
-    printf("Largura do link: %lF", largura_link);
-    printf("\n%.2lF%%,0", porc_ocupacao * 100);
+    //printf("Largura do link: %lF", largura_link);
+    //printf("\n%.2lF%%,0", porc_ocupacao * 100);
 
     // gerando o tempo de chegada da primeira requisicao.
     chegada = (-1.0 / (1.0 / intervalo_medio_chegada)) * log(aleatorio());
@@ -160,7 +160,7 @@ int main()
             E_N(printf(",%lF", e_n_final););
             E_W(printf(",%lF", e_w_final););
             ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
-            OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(coleta_dados, servico)););
+            OCUPACAO(printf("%.0lF %lF\n", tempo_decorrido, soma_tempo_servico / maximo(coleta_dados, servico)););
             coleta_dados += 100.00;
         }
         // chegada
