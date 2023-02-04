@@ -118,10 +118,10 @@ int main()
 {
     // Capacity of 10 elements
     MinHeap *heapEventos = init_minheap(2000);
-    double tempo_simulacao = 36000;
+    double tempo_simulacao = 3600000;
     double tempo_decorrido = 0.0;
 
-    double intervalo_medio_chamada = 15;
+    double intervalo_medio_chamada = 10;
     double duracao_chamada = 100;
 
     double intervalo_medio_chegada_ligacao = 0.02;
@@ -177,7 +177,6 @@ int main()
     create_event(heapEventos, FIM_CHAMADA, chamada.time + exponential(duracao_chamada));
     create_event(heapEventos, CHEGADA, exponential(intervalo_medio_chegada));
     create_event(heapEventos, COLETA_DADOS, 100.0);
-
     while (tempo_decorrido <= tempo_simulacao)
     {
         intervalo_medio_chegada = 1 / (1 / intervalo_medio_chegada_web + no_chamadas / intervalo_medio_chegada_ligacao);
@@ -216,11 +215,12 @@ int main()
                 servico = create_event(heapEventos, SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link);
                 soma_tempo_servico += servico.time - tempo_decorrido;
             }
+
             fila++;
             max_fila = fila > max_fila ? fila : max_fila;
 
             create_event(heapEventos, CHEGADA, tempo_decorrido + exponential(intervalo_medio_chegada));
-    
+
             // little
             e_n.soma_areas +=
                 (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
@@ -235,7 +235,6 @@ int main()
 
         case SERVICO:
             fila--;
-
             if (fila)
             {
                 servico = create_event(heapEventos, SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link);
@@ -276,7 +275,6 @@ int main()
     e_w_final =
         (e_w_chegada.soma_areas - e_w_saida.soma_areas) / e_w_chegada.no_eventos;
     lambda = e_w_chegada.no_eventos / tempo_decorrido;
-
     VALORES_FINAIS(
         puts("\nResultado final:");
 
@@ -284,7 +282,7 @@ int main()
         printf("E[W]: %lF\n", e_w_final);
         printf("lambda: %lF\n\n", lambda);
         printf("Erro de Little: %.20lF\n\n", fabs(e_n_final - lambda * e_w_final));
-        printf("Ocupacao: %lF.\n", soma_tempo_servico / maximo(tempo_decorrido, servico.time));
+        printf("Ocupacao: %lF.\n", soma_tempo_servico / tempo_decorrido);
         printf("Max fila: %ld.\n", max_fila);
         printf("Numero de pacotes: web: %ld, ligacao: %ld.\n", no_pacotes_web, no_pacotes_ligacao);)
     free_minheap(heapEventos);
