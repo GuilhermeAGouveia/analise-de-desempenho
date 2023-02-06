@@ -4,8 +4,8 @@
 #include <time.h>
 
 // Escolha apenas uma das macros abaixo para definir o tipo de medida que será exibida
-#define OCUPACAO(x) x
-#define E_N(x) 
+#define OCUPACAO(x) 
+#define E_N(x) x
 #define E_W(x) 
 #define ERRO_LITTLE(x) 
 #define VALORES_FINAIS(x) 
@@ -157,9 +157,9 @@ int main()
             e_w_final = (e_w_chegada.soma_areas - e_w_saida.soma_areas) / (double)e_w_chegada.no_eventos;
             lambda = e_w_chegada.no_eventos / tempo_decorrido;
 
-            E_N(printf(",%lF", e_n_final););
-            E_W(printf(",%lF", e_w_final););
-            ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
+            E_N(printf("%.0lF %lF\n", tempo_decorrido, e_n_final););
+            E_W(printf("%.0lF %lF\n", tempo_decorrido, e_w_final););
+            ERRO_LITTLE(printf("%.0lF %.20lF\n", tempo_decorrido, fabs(e_n_final - lambda * e_w_final)););
             OCUPACAO(printf("%.0lF %lF\n", tempo_decorrido, soma_tempo_servico / maximo(coleta_dados, servico)););
             coleta_dados += 100.00;
         }
