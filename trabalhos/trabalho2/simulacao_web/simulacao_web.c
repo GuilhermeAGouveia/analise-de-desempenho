@@ -5,9 +5,9 @@
 
 // Escolha apenas uma das macros abaixo para definir o tipo de medida que será exibida
 #define OCUPACAO(x) 
-#define E_N(x) x
+#define E_N(x) 
 #define E_W(x) 
-#define ERRO_LITTLE(x) 
+#define ERRO_LITTLE(x) x
 #define VALORES_FINAIS(x) 
 
 typedef struct little_
@@ -159,7 +159,7 @@ int main()
 
             E_N(printf("%.0lF %lF\n", tempo_decorrido, e_n_final););
             E_W(printf("%.0lF %lF\n", tempo_decorrido, e_w_final););
-            ERRO_LITTLE(printf("%.0lF %.20lF\n", tempo_decorrido, fabs(e_n_final - lambda * e_w_final)););
+            ERRO_LITTLE(printf("%.0lF %.20lF\n", tempo_decorrido, (e_n_final - lambda * e_w_final)););
             OCUPACAO(printf("%.0lF %lF\n", tempo_decorrido, soma_tempo_servico / maximo(coleta_dados, servico)););
             coleta_dados += 100.00;
         }
