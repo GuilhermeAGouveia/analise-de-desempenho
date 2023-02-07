@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "binaryheap.h"
+#include "list.h"
 
 int get_min(MinHeap *heap)
 {
@@ -53,7 +53,7 @@ MinHeap *delete_element(MinHeap *heap, int index)
 {
     // Deletes an element, indexed by index
     // Ensure that it's lesser than the current root
-    for (int i = index; i < heap->size; i++)
+    for (int i = index; i < heap->size - 1; i++)
     {
         heap->arr[i] = heap->arr[i + 1];
     }
@@ -61,6 +61,19 @@ MinHeap *delete_element(MinHeap *heap, int index)
     heap->size--;
 
     return heap;
+}
+
+MinHeap remove_all_events_by_id_chamada(MinHeap *heap, int id_chamada)
+{
+    for (int i = 0; i < heap->size; i++)
+    {
+        if (heap->arr[i].id_chamada == id_chamada)
+        {
+            printf("Removing event %d, type %d\n", heap->arr[i].id_chamada, heap->arr[i].type);
+            delete_element(heap, i);
+        }
+    }
+    return *heap;
 }
 
 Event extract_minheap(MinHeap *heap)
@@ -71,8 +84,9 @@ Event extract_minheap(MinHeap *heap)
     if (!heap || heap->size == 0)
         return (Event){-1, -1};
     int index = get_min(heap);
+    Event min = heap->arr[index];
     delete_element(heap, index);
-    return heap->arr[index];
+    return min;
 }
 
 void print_heap(MinHeap *heap)

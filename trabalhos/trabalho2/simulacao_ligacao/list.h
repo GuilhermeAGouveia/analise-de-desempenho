@@ -11,14 +11,15 @@
  * Created on January 26, 2021, 11:32 AM
  */
 
-#ifndef BINARYHEAP_H
-#define BINARYHEAP_H
+#ifndef LIST_H
+#define LIST_H
 
 typedef enum {COLETA_DADOS, CHEGADA_WEB, SERVICO_WEB, CHEGADA_LIGACAO, SERVICO_LIGACAO, NOVA_CHAMADA, FIM_CHAMADA} EventType;
 
 typedef struct Event {
 	EventType type;
 	double time;
+    int id_chamada; // id da chamada
 } Event;
 
 
@@ -43,5 +44,5 @@ MinHeap* delete_element(MinHeap* heap, int index);
 Event extract_minheap(MinHeap* heap);
 void print_heap(MinHeap* heap);
 void free_minheap(MinHeap* heap);
-
-#endif /* BINARYHEAP_H */
+MinHeap remove_all_events_by_id_chamada(MinHeap *heap, int id_chamada);
+#endif /* LIST_H */
