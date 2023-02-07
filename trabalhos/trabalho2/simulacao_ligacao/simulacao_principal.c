@@ -9,7 +9,10 @@
 #define E_N(x)
 #define E_W(x)
 #define ERRO_LITTLE(x)
-#define VALORES_FINAIS(x) x
+#define E_N_TR(x) x
+#define E_W_TR(x)
+#define ERRO_LITTLE_TR(x)
+#define VALORES_FINAIS(x) 
 
 static int no_pacotes_web = 0;
 static int no_pacotes_ligacao = 0;
@@ -240,10 +243,13 @@ int main()
             e_w_final_tr = (e_w_chegada_tr.soma_areas - e_w_saida_tr.soma_areas) / (double)e_w_chegada_tr.no_eventos;
             lambda_tr = e_w_chegada_tr.no_eventos / tempo_decorrido;
 
-            E_N(printf(",%lF", e_n_final););
-            E_W(printf(",%lF", e_w_final););
-            ERRO_LITTLE(printf(",%.20lF", fabs(e_n_final - lambda * e_w_final)););
-            OCUPACAO(printf(",%lF", soma_tempo_servico / maximo(coleta_dados, servico)););
+            E_N(printf("%.0lF %lF\n", tempo_decorrido, e_n_final););
+            E_W(printf("%.0lF %lF\n", tempo_decorrido, e_w_final););
+            ERRO_LITTLE(printf("%.0lF %.20lF\n", tempo_decorrido, (e_n_final - lambda * e_w_final)););
+            OCUPACAO(printf("%.0lF %lF\n", tempo_decorrido, soma_tempo_servico / maximo(coleta_dados, servico)););
+            E_N_TR(printf("%.0lF %lF\n", tempo_decorrido, e_n_final_tr););
+            E_W_TR(printf("%.0lF %lF\n", tempo_decorrido, e_w_final_tr););
+            ERRO_LITTLE_TR(printf("%.0lF %.20lF\n", tempo_decorrido, (e_n_final_tr - lambda_tr * e_w_final_tr)););
             create_event(heapEventos, COLETA_DADOS, tempo_decorrido + 100.00);
             break;
 
@@ -393,13 +399,13 @@ int main()
         printf("lambda: %lF\n", lambda);
         printf("Erro de Little: %.20lF\n", fabs(e_n_final - lambda * e_w_final));
         printf("Ocupacao: %lF.\n", soma_tempo_servico / tempo_decorrido);
-        printf("Numero de pacotes: web: %ld, ligacao: %ld.\n", no_pacotes_web, no_pacotes_ligacao);)
+        printf("Numero de pacotes: web: %ld, ligacao: %ld.\n", no_pacotes_web, no_pacotes_ligacao);
 
-        puts("\nTempo real:");
-        printf("E[N]: %lF\n", e_n_final_tr);
-        printf("E[W]: %lF\n", e_w_final_tr);
-        printf("lambda: %lF\n\n", lambda_tr);
-        printf("Erro de Little: %.20lF\n\n", fabs(e_n_final_tr - lambda_tr * e_w_final_tr));
+    puts("\nTempo real:");
+    printf("E[N]: %lF\n", e_n_final_tr);
+    printf("E[W]: %lF\n", e_w_final_tr);
+    printf("lambda: %lF\n\n", lambda_tr);
+    printf("Erro de Little: %.20lF\n\n", fabs(e_n_final_tr - lambda_tr * e_w_final_tr));)
     free_minheap(heapEventos);
 
     return 0;
