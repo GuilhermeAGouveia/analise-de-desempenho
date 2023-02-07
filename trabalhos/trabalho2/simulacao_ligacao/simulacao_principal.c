@@ -118,7 +118,7 @@ int main()
 {
     // Capacity of 10 elements
     MinHeap *heapEventos = init_minheap(2000);
-    double tempo_simulacao = 3600000;
+    double tempo_simulacao = 360000;
     double tempo_decorrido = 0.0;
 
     double intervalo_medio_chamada = 10;
@@ -128,6 +128,7 @@ int main()
     double intervalo_medio_chegada_web = 0.01;
     double largura_link;
     double porc_ocupacao;
+    double tempo_servico;
 
     Event chegada;
     Event servico;
@@ -175,7 +176,7 @@ int main()
 
     chamada = create_event(heapEventos, NOVA_CHAMADA, exponential(intervalo_medio_chamada));
     create_event(heapEventos, FIM_CHAMADA, chamada.time + exponential(duracao_chamada));
-    create_event(heapEventos, CHEGADA, exponential(intervalo_medio_chegada));
+    create_event(heapEventos, CHEGADA_WEB, exponential(intervalo_medio_chegada));
     create_event(heapEventos, COLETA_DADOS, 100.0);
     while (tempo_decorrido <= tempo_simulacao)
     {
@@ -208,19 +209,19 @@ int main()
             create_event(heapEventos, COLETA_DADOS, tempo_decorrido + 100.00);
             break;
 
-        case CHEGADA:
+        case CHEGADA_WEB:
 
             if (!fila)
             {
-                servico = create_event(heapEventos, SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link);
-                soma_tempo_servico += servico.time - tempo_decorrido;
+                tempo_servico = gera_pacote_web() / largura_link;
+                servico = create_event(heapEventos, SERVICO_WEB, tempo_decorrido + tempo_servico);
+                soma_tempo_servico += tempo_servico;
             }
 
             fila++;
             max_fila = fila > max_fila ? fila : max_fila;
 
-            create_event(heapEventos, CHEGADA, tempo_decorrido + exponential(intervalo_medio_chegada));
-
+            create_event(heapEventos, CHEGADA_WEB, tempo_decorrido + exponential(intervalo_medio_chegada_web));
             // little
             e_n.soma_areas +=
                 (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
@@ -233,12 +234,59 @@ int main()
             e_w_chegada.no_eventos++;
             break;
 
-        case SERVICO:
+        case SERVICO_WEB:
             fila--;
             if (fila)
             {
-                servico = create_event(heapEventos, SERVICO, tempo_decorrido + gera_pacote(intervalo_medio_chegada_web, intervalo_medio_chegada_ligacao, no_chamadas) / largura_link);
-                soma_tempo_servico += servico.time - tempo_decorrido;
+                tempo_servico = gera_pacote_web() / largura_link;
+                servico = create_event(heapEventos, SERVICO_WEB, tempo_decorrido + tempo_servico);
+                soma_tempo_servico += tempo_servico;
+            }
+
+            // little
+            e_n.soma_areas +=
+                (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
+            e_n.tempo_anterior = tempo_decorrido;
+            e_n.no_eventos--;
+
+            e_w_saida.soma_areas +=
+                (tempo_decorrido - e_w_saida.tempo_anterior) * e_w_saida.no_eventos;
+            e_w_saida.tempo_anterior = tempo_decorrido;
+            e_w_saida.no_eventos++;
+            break;
+
+         case CHEGADA_LIGACAO:
+
+            if (!fila)
+            {
+                tempo_servico = gera_pacote_ligacao() / largura_link;
+                servico = create_event(heapEventos, SERVICO_LIGACAO, tempo_decorrido + tempo_servico);
+                soma_tempo_servico += tempo_servico;
+            }
+
+            fila++;
+            max_fila = fila > max_fila ? fila : max_fila;
+
+            create_event(heapEventos, CHEGADA_LIGACAO, tempo_decorrido + intervalo_medio_chegada_ligacao / no_chamadas);
+            // little
+            e_n.soma_areas +=
+                (tempo_decorrido - e_n.tempo_anterior) * e_n.no_eventos;
+            e_n.tempo_anterior = tempo_decorrido;
+            e_n.no_eventos++;
+
+            e_w_chegada.soma_areas +=
+                (tempo_decorrido - e_w_chegada.tempo_anterior) * e_w_chegada.no_eventos;
+            e_w_chegada.tempo_anterior = tempo_decorrido;
+            e_w_chegada.no_eventos++;
+            break;
+
+        case SERVICO_LIGACAO:
+            fila--;
+            if (fila)
+            {
+                tempo_servico = gera_pacote_ligacao() / largura_link;
+                servico = create_event(heapEventos, SERVICO_LIGACAO, tempo_decorrido + tempo_servico);
+                soma_tempo_servico += tempo_servico;
             }
 
             // little
@@ -256,6 +304,9 @@ int main()
         case NOVA_CHAMADA:
 
             no_chamadas++;
+            if (no_chamadas == 1) 
+                create_event(heapEventos, CHEGADA_LIGACAO, tempo_decorrido + exponential(intervalo_medio_chegada_ligacao));
+
             chamada = create_event(heapEventos, NOVA_CHAMADA, tempo_decorrido + exponential(intervalo_medio_chamada));
             create_event(heapEventos, FIM_CHAMADA, chamada.time + exponential(duracao_chamada));
             break;

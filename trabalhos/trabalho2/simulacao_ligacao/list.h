@@ -14,7 +14,7 @@
 #ifndef BINARYHEAP_H
 #define BINARYHEAP_H
 
-typedef enum {COLETA_DADOS, CHEGADA, SERVICO, NOVA_CHAMADA, FIM_CHAMADA} EventType;
+typedef enum {COLETA_DADOS, CHEGADA_WEB, SERVICO_WEB, CHEGADA_LIGACAO, SERVICO_LIGACAO, NOVA_CHAMADA, FIM_CHAMADA} EventType;
 
 typedef struct Event {
 	EventType type;
@@ -36,11 +36,9 @@ int parent(int i);
 int left_child(int i);
 int right_child(int i);
 void swap(int* a, int* b);
-Event get_min(MinHeap* heap);
+int get_min(MinHeap* heap);
 MinHeap* init_minheap(int capacity);
 MinHeap* insert_minheap(MinHeap* heap, Event element);
-MinHeap* heapify(MinHeap* heap, int index);
-MinHeap* delete_minimum(MinHeap* heap);
 MinHeap* delete_element(MinHeap* heap, int index);
 Event extract_minheap(MinHeap* heap);
 void print_heap(MinHeap* heap);
