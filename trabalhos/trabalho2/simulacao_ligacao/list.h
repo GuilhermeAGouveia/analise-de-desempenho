@@ -43,4 +43,5 @@ MinHeap* delete_element(MinHeap* heap, int index);
 Event extract_minheap(MinHeap* heap);
 void print_heap(MinHeap* heap);
 void free_minheap(MinHeap* heap);
+
 #endif /* LIST_H */
