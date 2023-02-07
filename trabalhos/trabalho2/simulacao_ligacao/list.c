@@ -63,19 +63,6 @@ MinHeap *delete_element(MinHeap *heap, int index)
     return heap;
 }
 
-MinHeap remove_all_events_by_id_chamada(MinHeap *heap, int id_chamada)
-{
-    for (int i = 0; i < heap->size; i++)
-    {
-        if (heap->arr[i].id_chamada == id_chamada)
-        {
-            printf("Removing event %d, type %d\n", heap->arr[i].id_chamada, heap->arr[i].type);
-            delete_element(heap, i);
-        }
-    }
-    return *heap;
-}
-
 Event extract_minheap(MinHeap *heap)
 {
     // Extracts the minimum element, and returns it
