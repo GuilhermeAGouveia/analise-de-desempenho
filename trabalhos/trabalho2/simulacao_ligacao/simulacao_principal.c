@@ -118,7 +118,7 @@ int main()
 {
     // Capacity of 10 elements
     MinHeap *heapEventos = init_minheap(2000);
-    double tempo_simulacao = 3600000;
+    double tempo_simulacao = 36000;
     double tempo_decorrido = 0.0;
 
     double intervalo_medio_chamada = 10;
