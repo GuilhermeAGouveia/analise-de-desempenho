@@ -9,10 +9,10 @@
 #define E_N(x)
 #define E_W(x)
 #define ERRO_LITTLE(x)
-#define E_N_TR(x) x
+#define E_N_TR(x) 
 #define E_W_TR(x)
 #define ERRO_LITTLE_TR(x)
-#define VALORES_FINAIS(x)
+#define VALORES_FINAIS(x) x
 
 static int no_pacotes_web = 0;
 static int no_pacotes_ligacao = 0;
@@ -161,7 +161,7 @@ int main()
     Little -- fim
     */
 
-    srand(time(NULL));
+    srand(100);
     // calculando chances que cada pacote tem de ser gerado
     double no_pacotes_web_por_segundo = 1.0 / intervalo_medio_chegada_web;
     double no_pacotes_ligacao_por_segundo = (duracao_chamada / intervalo_medio_chamada) / intervalo_medio_chegada_ligacao;
@@ -171,7 +171,7 @@ int main()
     scanf("%lF", &porc_ocupacao);
     double intervalo_medio_chegada = 1 / (1 / intervalo_medio_chegada_web + (duracao_chamada / intervalo_medio_chamada) / intervalo_medio_chegada_ligacao);
     largura_link = (1.00 / intervalo_medio_chegada) * ((0.1 * 1500.00 + 0.4 * 40.00 + 0.5 * 550.00) * chance_web + 160.00 * (1 - chance_web)) / porc_ocupacao;
-    printf("Largura do link para %.2lF%% de ocupação: %lF\n", porc_ocupacao * 100, largura_link);
+    VALORES_FINAIS(printf("Largura do link para %.2lF%% de ocupação: %lF\n", porc_ocupacao * 100, largura_link););
 
     chamada = create_event(heapEventos, NOVA_CHAMADA, exponential(intervalo_medio_chamada));
     create_event(heapEventos, FIM_CHAMADA, chamada.time + exponential(duracao_chamada));
@@ -375,7 +375,7 @@ int main()
         puts("\nTempo real:");
         printf("E[N]: %lF\n", e_n_final_tr);
         printf("E[W]: %lF\n", e_w_final_tr);
-        printf("lambda: %lF\n\n", lambda_tr);
+        printf("lambda: %lF\n", lambda_tr);
         printf("Erro de Little: %.20lF\n\n", fabs(e_n_final_tr - lambda_tr * e_w_final_tr));)
     free_minheap(heapEventos);
 
