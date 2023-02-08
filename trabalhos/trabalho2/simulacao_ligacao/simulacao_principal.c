@@ -12,7 +12,7 @@
 #define E_N_TR(x) x
 #define E_W_TR(x)
 #define ERRO_LITTLE_TR(x)
-#define VALORES_FINAIS(x) 
+#define VALORES_FINAIS(x)
 
 static int no_pacotes_web = 0;
 static int no_pacotes_ligacao = 0;
@@ -81,26 +81,7 @@ int gera_pacote_web()
         i = 2;
     }
     no_pacotes_web++;
-
     return tamPacotes[i];
-}
-
-int gera_pacote(double intervalo_medio_chegada_web, double intervalo_medio_chegada_ligacao, long int no_chamadas)
-{
-    double no_pacotes_web_por_segundo = 1.0 / intervalo_medio_chegada_web;
-    double no_pacotes_ligacao_por_segundo = no_chamadas / intervalo_medio_chegada_ligacao;
-    double no_pacotes_por_segundo = no_pacotes_web_por_segundo + no_pacotes_ligacao_por_segundo;
-    int chance_web = (no_pacotes_web_por_segundo / no_pacotes_por_segundo * 100);
-    int chance = rand() % 100;
-
-    if (chance < chance_web)
-    {
-        return gera_pacote_web();
-    }
-    else
-    {
-        return gera_pacote_ligacao();
-    }
 }
 
 Event create_event(MinHeap *heapEventos, EventType type, double time)
@@ -110,16 +91,6 @@ Event create_event(MinHeap *heapEventos, EventType type, double time)
     event.time = time;
     insert_minheap(heapEventos, event);
     return event;
-}
-
-void printArray(double *arr, int arr_size)
-{
-    int i;
-    for (i = 0; i < arr_size; i++)
-    {
-        printf("%lf ", arr[i]);
-    }
-    printf("\n");
 }
 
 double exponential(double lambda)
@@ -172,16 +143,16 @@ int main()
     little e_w_chegada;
     little e_w_saida;
 
+    inicia_little(&e_n);
+    inicia_little(&e_w_chegada);
+    inicia_little(&e_w_saida);
+
     /*
     Little tempo real
     */
     little e_n_tr;
     little e_w_chegada_tr;
     little e_w_saida_tr;
-
-    inicia_little(&e_n);
-    inicia_little(&e_w_chegada);
-    inicia_little(&e_w_saida);
 
     inicia_little(&e_n_tr);
     inicia_little(&e_w_chegada_tr);
@@ -206,8 +177,8 @@ int main()
     create_event(heapEventos, FIM_CHAMADA, chamada.time + exponential(duracao_chamada));
     create_event(heapEventos, CHEGADA_WEB, exponential(intervalo_medio_chegada_web));
     create_event(heapEventos, CHEGADA_LIGACAO, chamada.time);
-
     create_event(heapEventos, COLETA_DADOS, 100.0);
+    
     while (tempo_decorrido <= tempo_simulacao)
     {
         Event current_event = extract_minheap(heapEventos);
@@ -401,11 +372,11 @@ int main()
         printf("Ocupacao: %lF.\n", soma_tempo_servico / tempo_decorrido);
         printf("Numero de pacotes: web: %ld, ligacao: %ld.\n", no_pacotes_web, no_pacotes_ligacao);
 
-    puts("\nTempo real:");
-    printf("E[N]: %lF\n", e_n_final_tr);
-    printf("E[W]: %lF\n", e_w_final_tr);
-    printf("lambda: %lF\n\n", lambda_tr);
-    printf("Erro de Little: %.20lF\n\n", fabs(e_n_final_tr - lambda_tr * e_w_final_tr));)
+        puts("\nTempo real:");
+        printf("E[N]: %lF\n", e_n_final_tr);
+        printf("E[W]: %lF\n", e_w_final_tr);
+        printf("lambda: %lF\n\n", lambda_tr);
+        printf("Erro de Little: %.20lF\n\n", fabs(e_n_final_tr - lambda_tr * e_w_final_tr));)
     free_minheap(heapEventos);
 
     return 0;
