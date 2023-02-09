@@ -2,7 +2,7 @@
 set tmargin 4
 set bmargin 4
 set rmargin 10
-set lmargin 15
+set lmargin 12
 set grid
 show grid
 

@@ -13,7 +13,7 @@ set terminal png size 1280,720 enhanced font "Helvetica, 14"
 set output '/home/2020.1.08.035/Downloads/analise-de-desempenho/trabalhos/trabalho2/simulacao_ligacao/png/e_n_tr/e_n99_tr.png'
 
 #Define o titulo e os nomes dos eixos no gráfico
-set title "Valor esperado de N | E[N] para diferentes ocupações" font "Helvetica-Bold, 18"
+set title "Valor esperado de N | E[N] para diferentes ocupações (Tempo Real)" font "Helvetica-Bold, 18"
 set xlabel "Tempo (s)" font "Helvetica-Bold, 14"
 set ylabel "E[N]" font "Helvetica-Bold, 14"
 
