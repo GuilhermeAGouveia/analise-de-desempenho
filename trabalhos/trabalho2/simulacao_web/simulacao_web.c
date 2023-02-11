@@ -7,8 +7,8 @@
 #define OCUPACAO(x) 
 #define E_N(x) 
 #define E_W(x) 
-#define ERRO_LITTLE(x) x
-#define VALORES_FINAIS(x) 
+#define ERRO_LITTLE(x) 
+#define VALORES_FINAIS(x) x
 
 typedef struct little_
 {
@@ -127,9 +127,10 @@ int main()
     srand(10000);
 
     //printf("Informe o percentual de ocupação desejado (entre 0 e 1): ");
+    VALORES_FINAIS(printf("Insira a porcentagem de ocupação do link: "););
     scanf("%lF", &porc_ocupacao);
     largura_link = (1 / intervalo_medio_chegada) * (0.1 * 1500 + 0.4 * 40 + 0.5 * 550) / porc_ocupacao;
-    //printf("Largura do link: %lF", largura_link);
+    VALORES_FINAIS(printf("Largura do link para %.2lF%% de ocupação: %lF\n", porc_ocupacao * 100, largura_link););
     //printf("\n%.2lF%%,0", porc_ocupacao * 100);
 
     // gerando o tempo de chegada da primeira requisicao.

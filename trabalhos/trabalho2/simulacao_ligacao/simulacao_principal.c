@@ -5,13 +5,13 @@
 #include "binaryheap.h"
 
 // Escolha apenas uma das macros abaixo para definir o tipo de medida que será exibida
-#define OCUPACAO(x)
-#define E_N(x)
-#define E_W(x)
-#define ERRO_LITTLE(x)
+#define OCUPACAO(x) 
+#define E_N(x) 
+#define E_W(x) 
+#define ERRO_LITTLE(x) 
 #define E_N_TR(x) 
-#define E_W_TR(x)
-#define ERRO_LITTLE_TR(x)
+#define E_W_TR(x) 
+#define ERRO_LITTLE_TR(x) 
 #define VALORES_FINAIS(x) x
 
 static int no_pacotes_web = 0;
@@ -217,7 +217,7 @@ int main()
             E_N(printf("%.0lF %lF\n", tempo_decorrido, e_n_final););
             E_W(printf("%.0lF %lF\n", tempo_decorrido, e_w_final););
             ERRO_LITTLE(printf("%.0lF %.20lF\n", tempo_decorrido, (e_n_final - lambda * e_w_final)););
-            OCUPACAO(printf("%.0lF %lF\n", tempo_decorrido, soma_tempo_servico / maximo(coleta_dados, servico)););
+            OCUPACAO(printf("%.0lF %lF\n", tempo_decorrido, soma_tempo_servico / maximo(coleta_dados.time, maximo(servico_ligacao.time, servico_web.time))););
             E_N_TR(printf("%.0lF %lF\n", tempo_decorrido, e_n_final_tr););
             E_W_TR(printf("%.0lF %lF\n", tempo_decorrido, e_w_final_tr););
             ERRO_LITTLE_TR(printf("%.0lF %.20lF\n", tempo_decorrido, (e_n_final_tr - lambda_tr * e_w_final_tr)););
@@ -370,7 +370,7 @@ int main()
         printf("lambda: %lF\n", lambda);
         printf("Erro de Little: %.20lF\n", fabs(e_n_final - lambda * e_w_final));
         printf("Ocupacao: %lF.\n", soma_tempo_servico / tempo_decorrido);
-        printf("Numero de pacotes: web: %ld, ligacao: %ld.\n", no_pacotes_web, no_pacotes_ligacao);
+        printf("Numero de pacotes: web: %d, ligacao: %d.\n", no_pacotes_web, no_pacotes_ligacao);
 
         puts("\nTempo real:");
         printf("E[N]: %lF\n", e_n_final_tr);
