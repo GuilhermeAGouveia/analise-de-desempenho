@@ -167,7 +167,7 @@ int main()
     double no_pacotes_ligacao_por_segundo = (duracao_chamada / intervalo_medio_chamada) / intervalo_medio_chegada_ligacao;
     double no_pacotes_por_segundo = no_pacotes_web_por_segundo + no_pacotes_ligacao_por_segundo;
     double chance_web = no_pacotes_web_por_segundo / no_pacotes_por_segundo;
-
+    VALORES_FINAIS(printf("Insira a porcentagem de ocupação do link: "););
     scanf("%lF", &porc_ocupacao);
     double intervalo_medio_chegada = 1 / (1 / intervalo_medio_chegada_web + (duracao_chamada / intervalo_medio_chamada) / intervalo_medio_chegada_ligacao);
     largura_link = (1.00 / intervalo_medio_chegada) * ((0.1 * 1500.00 + 0.4 * 40.00 + 0.5 * 550.00) * chance_web + 160.00 * (1 - chance_web)) / porc_ocupacao;
