@@ -10,10 +10,10 @@ show grid
 set terminal png size 1280,720 enhanced font "Helvetica, 14"
 
 #Define o caminho e o nome do arquivo de saída
-set output '/home/2020.1.08.035/Downloads/analise-de-desempenho/trabalhos/trabalho2/simulacao_web/png/e_n/e[n]99.png'
+set output '/home/2020.1.08.035/Documentos/analise-de-desempenho/trabalhos/trabalho2/simulacao_web/png/e_n/e[n]99.png'
 
 #Define o titulo e os nomes dos eixos no gráfico
-set title "Valor esperado de N | E[N] para diferentes ocupações" font "Helvetica-Bold, 18"
+set title "Valor esperado de N | E[N] para ocupação de 99%" font "Helvetica-Bold, 18"
 set xlabel "Tempo (s)" font "Helvetica-Bold, 14"
 set ylabel "E[N]" font "Helvetica-Bold, 14"
 

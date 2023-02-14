@@ -10,7 +10,7 @@ show grid
 set terminal png size 1280,720 enhanced font "Helvetica, 14"
 
 #Define o caminho e o nome do arquivo de saída
-set output '/home/2020.1.08.035/Downloads/analise-de-desempenho/trabalhos/trabalho2/simulacao_web/png/erro/erro.png'
+set output '/home/2020.1.08.035/Documentos/analise-de-desempenho/trabalhos/trabalho2/simulacao_web/png/erro/erro.png'
 
 #Define o titulo e os nomes dos eixos no gráfico
 set title "Erro de Little para diferentes ocupações" font "Helvetica-Bold, 18"
