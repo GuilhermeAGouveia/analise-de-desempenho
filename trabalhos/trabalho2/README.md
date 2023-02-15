@@ -14,7 +14,7 @@ Definir quais informações deseja exibir manipulando as macros que existem no i
 #define OCUPACAO(x) 
 #define E_N(x) 
 #define E_W(x) 
-#define ERRO_LITTLE(x) 
+#define ERRO_LITTLE(x) x
 #define E_N_TR(x) 
 #define E_W_TR(x) 
 #define ERRO_LITTLE_TR(x) 
