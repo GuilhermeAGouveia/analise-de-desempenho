@@ -1,6 +1,6 @@
 # Trabalho 2 (2022/2)
 
-> <strong>O código fonte principal é `simulacao_principalc`</strong>
+> <strong>O código fonte principal são `simulador_ligacao/simulacao_principal.c` e `simulador_web/simulacao_web.c` </strong>
 
 ## 💻 Objetivo
 
