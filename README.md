@@ -23,8 +23,6 @@ pode ter impacto em várias áreas da sociedade, como saúde, transporte, finan�
 
 Agradecemos às seguintes pessoas que contribuíram para este projeto:
 
-[⬆ Voltar ao topo](#Análise-de-Desempenho-[DCE539]-(08)-2022/2)<br>
-
 <table>
   <tr>
     <td align="center">
@@ -46,4 +44,8 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
       </tr>
 </table>
 
-[⬆ Voltar ao topo](#Análise-de-Desempenho---[DCE539]-(08)---2022/2)<br>
+# Análise de Desempenho - [DCE539] (08) - 2022/2
+[⬆ Voltar ao topo](#Análise-de-Desempenho-[DCE539]-(08)-2022/2)<br>
+
+# Algoritmos Genéticos para otimização de funções reais
+[⬆ Voltar ao topo](#Algoritmos-Genéticos-para-otimização-de-funções-reais)<br>
