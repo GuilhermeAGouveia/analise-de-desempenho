@@ -45,7 +45,4 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
 </table>
 
 # Análise de Desempenho - [DCE539] (08) - 2022/2
-[⬆ Voltar ao topo](#Análise-de-Desempenho-[DCE539]-(08)-2022/2)<br>
-
-# Algoritmos Genéticos para otimização de funções reais
-[⬆ Voltar ao topo](#Algoritmos-Genéticos-para-otimização-de-funções-reais)<br>
+[⬆ Voltar ao topo](#Análise-de-Desempenho---[DCE539]-(08)---2022/2)<br>
