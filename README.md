@@ -43,4 +43,4 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
       </tr>
 </table>
 
-[⬆ Voltar ao topo](#Analise-de-Desempenho-[DCE539]-(08)-2022/2)<br>
+[⬆ Voltar ao topo](#Análise-de-Desempenho---[DCE539]-(08)---2022/2)<br>
