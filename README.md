@@ -1,6 +1,4 @@
 # Análise de Desempenho - [DCE539] (08) - 2022/2
-
-  Repositório para colocar alguns trabalhos da Disciplina de "Analise de Desempenho" da Universidade Federal de Alfenas.
   
 <p align="justify">
 A Análise de Desempenho é uma área da Ciência da Computação que estuda a eficiência e a escalabilidade dos algoritmos e sistemas computacionais. Um cientista da computação que se dedica a essa área estuda como medir, analisar e otimizar o desempenho de sistemas computacionais.
